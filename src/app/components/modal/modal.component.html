@@ -1,0 +1,30 @@
+<div *ngIf="isOpen" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-gray-900/75 transition-opacity" (click)="close()"></div>
+
+  <div class="fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <!-- Modal Panel -->
+      <div [ngClass]="['relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 w-full', getMaxWidthClass()]">
+        <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+          <button
+            type="button"
+            class="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            (click)="close()"
+          >
+            <span class="sr-only">Close</span>
+            <lucide-icon [name]="X" class="h-6 w-6" aria-hidden="true"></lucide-icon>
+          </button>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-semibold leading-6 text-gray-900 dark:text-white mb-4" id="modal-title">
+            {{ title }}
+          </h3>
+          <div class="mt-2">
+            <ng-content></ng-content>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

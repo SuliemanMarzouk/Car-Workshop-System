@@ -1,0 +1,91 @@
+<app-auth-layout 
+    [title]="'auth.welcome_back' | translate" 
+    [subtitle]="'auth.welcome_subtitle' | translate"
+>
+  <div class="mb-8 text-center">
+    <h3 class="text-2xl font-bold text-gray-900">{{ 'auth.login_title' | translate }}</h3>
+  </div>
+
+  <div *ngIf="error()" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 flex items-center gap-2 rounded-r animate-pulse">
+    <lucide-icon [name]="AlertCircle" class="w-5 h-5"></lucide-icon>
+    <span class="text-sm font-medium">{{ error() }}</span>
+  </div>
+
+  <form (ngSubmit)="handleSubmit()" class="space-y-6">
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700 block">
+        {{ 'auth.email' | translate }}
+      </label>
+      <div class="relative group">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <lucide-icon [name]="Mail" class="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors"></lucide-icon>
+        </div>
+        <input
+          type="email"
+          name="email"
+          required
+          class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+          placeholder="name@company.com"
+          [(ngModel)]="formData.email"
+        />
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700 block">
+        {{ 'auth.password' | translate }}
+      </label>
+      <div class="relative group">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <lucide-icon [name]="Lock" class="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors"></lucide-icon>
+        </div>
+        <input
+          type="password"
+          name="password"
+          required
+          class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+          placeholder="••••••••"
+          [(ngModel)]="formData.password"
+        />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input 
+            type="checkbox" 
+            name="rememberMe"
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            [(ngModel)]="rememberMe"
+        />
+        <span class="text-sm text-gray-600">{{ 'auth.remember_me' | translate }}</span>
+      </label>
+      <a routerLink="/forgot-password" class="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline">
+        {{ 'auth.forgot_password' | translate }}
+      </a>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="loading()"
+      class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
+    >
+      <ng-container *ngIf="loading(); else buttonText">
+        <lucide-icon [name]="Loader2" class="w-5 h-5 animate-spin mr-2"></lucide-icon>
+        {{ 'auth.login_button' | translate }}...
+      </ng-container>
+      <ng-template #buttonText>
+        {{ 'auth.login_button' | translate }}
+      </ng-template>
+    </button>
+  </form>
+
+  <div class="mt-8 text-center">
+    <p class="text-sm text-gray-600">
+      {{ 'auth.no_account' | translate }} 
+      <a routerLink="/register" class="font-medium text-blue-600 hover:text-blue-500 hover:underline">
+        {{ 'auth.register_button' | translate }}
+      </a>
+    </p>
+  </div>
+</app-auth-layout>

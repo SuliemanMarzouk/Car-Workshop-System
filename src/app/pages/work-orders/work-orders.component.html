@@ -1,0 +1,158 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">{{ 'work_orders.title' | translate }}</h1>
+      <p class="text-gray-500 mt-1">{{ 'work_orders.subtitle' | translate }}</p>
+    </div>
+    <button 
+      (click)="isAddModalOpen.set(true)"
+      class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors w-full sm:w-auto"
+    >
+      <lucide-icon [name]="Plus" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.create_order' | translate }}
+    </button>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-4">
+      <div class="relative max-w-md flex-1">
+        <lucide-icon [name]="Search" class="absolute start-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <input
+          type="text"
+          [placeholder]="'common.search_placeholder_orders' | translate"
+          class="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+      <button class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
+        <lucide-icon [name]="Filter" class="w-4 h-4"></lucide-icon>
+        {{ 'common.filter' | translate }}
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-start text-sm">
+        <thead class="bg-gray-50 text-gray-500 uppercase">
+          <tr>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.work_order_id' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.plate_number' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.owner_name' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.status' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.created_date' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'common.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngIf="loading()">
+            <td colSpan="6" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+          </tr>
+          <tr *ngFor="let order of filteredOrders" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 font-medium text-gray-900 text-start">{{ order.id }}</td>
+            <td class="px-6 py-4 text-gray-600 text-start">{{ order.car?.plate_number }}</td>
+            <td class="px-6 py-4 text-gray-600 text-start">{{ order.car?.owner_name }}</td>
+            <td class="px-6 py-4 text-start">
+              <span [ngClass]="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusStyle(order.status)]">
+                {{ 'status.' + order.status | translate }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-600 text-start">{{ order.created_at | date }}</td>
+            <td class="px-6 py-4 text-start">
+              <button 
+                (click)="handleViewDetails(order)"
+                class="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-medium text-sm"
+              >
+                <lucide-icon [name]="Eye" class="w-4 h-4"></lucide-icon>
+                {{ 'common.view_details' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Work Order Modal -->
+  <app-modal 
+    [isOpen]="isAddModalOpen()" 
+    [title]="'dashboard.quick_actions.create_order' | translate" 
+    (onClose)="isAddModalOpen.set(false)"
+    size="lg"
+  >
+    <form (ngSubmit)="handleSubmit()" class="space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'table.car_info' | translate }}</label>
+        <select 
+          [(ngModel)]="formData.car_id" 
+          name="car_id"
+          class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+        >
+          <option value="">Select a car</option>
+          <option *ngFor="let car of cars()" [value]="car.id">
+            {{ car.plate_number }} - {{ car.owner_name }}
+          </option>
+        </select>
+        <p *ngIf="errors()['car_id']" class="mt-1 text-xs text-red-600">{{ errors()['car_id'][0] }}</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="text-sm font-bold text-gray-900">{{ 'table.work_order' | translate }} Items</h4>
+          <button 
+            type="button" 
+            (click)="addItem()"
+            class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+          >
+            <lucide-icon [name]="Plus" class="w-4 h-4"></lucide-icon>
+            Add Item
+          </button>
+        </div>
+
+        <div *ngFor="let item of formData.items; let i = index" class="flex gap-3 items-start">
+          <div class="flex-1">
+            <input 
+              type="text" 
+              [(ngModel)]="item.description" 
+              [name]="'desc_' + i"
+              placeholder="Description"
+              class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            >
+          </div>
+          <div class="w-32">
+            <input 
+              type="number" 
+              [(ngModel)]="item.price" 
+              [name]="'price_' + i"
+              placeholder="Price"
+              class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            >
+          </div>
+          <button 
+            type="button" 
+            (click)="removeItem(i)"
+            class="p-2 text-gray-400 hover:text-red-600 transition-colors"
+          >
+            <lucide-icon [name]="Trash2" class="w-5 h-5"></lucide-icon>
+          </button>
+        </div>
+        <p *ngIf="errors()['items']" class="mt-1 text-xs text-red-600">{{ errors()['items'][0] }}</p>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t">
+        <button 
+          type="button" 
+          (click)="isAddModalOpen.set(false)"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit"
+          class="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+</div>

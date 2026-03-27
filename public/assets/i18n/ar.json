@@ -1,0 +1,137 @@
+{
+  "app_title": "نظام إدارة خدمة السيارات",
+  "logout": "تسجيل خروج",
+  "admin": "مسؤول",
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "cars": "السيارات",
+    "work_orders": "أوامر العمل",
+    "pending_approvals": "الموافقات المعلقة",
+    "invoices": "الفواتير",
+    "users": "المستخدمين",
+    "settings": "الإعدادات"
+  },
+  "auth": {
+    "login_title": "سجل الدخول إلى حسابك",
+    "welcome_back": "مرحبًا بعودتك",
+    "welcome_subtitle": "أدر ورشة السيارات الخاصة بك بكفاءة مع حلول لوحة التحكم الشاملة لدينا.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "remember_me": "تذكرني",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "login_button": "تسجيل الدخول",
+    "no_account": "ليس لديك حساب؟",
+    "register_button": "إنشاء حساب",
+    "join_us": "انضم إلينا اليوم",
+    "join_subtitle": "ابدأ إدارة ورشة السيارات الخاصة بك باحترافية مع أدواتنا المتقدمة.",
+    "register_title": "إنشاء حساب جديد",
+    "name": "الاسم الكامل",
+    "confirm_password": "تأكيد كلمة المرور",
+    "have_account": "لديك حساب بالفعل؟",
+    "forgot_password_title": "نسيت كلمة المرور",
+    "forgot_password_subtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+    "send_reset_link": "إرسال رابط إعادة التعيين",
+    "back_to_login": "العودة لتسجيل الدخول",
+    "reset_password_title": "إعادة تعيين كلمة المرور",
+    "reset_password_subtitle": "أدخل كلمة المرور الجديدة أدناه.",
+    "new_password": "كلمة المرور الجديدة",
+    "reset_password_button": "إعادة تعيين كلمة المرور"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "subtitle": "مرحبًا بك في لوحة تحكم إدارة خدمة السيارات",
+    "stats": {
+      "total_cars": "إجمالي السيارات المسجلة",
+      "pending_orders": "أوامر العمل المعلقة",
+      "active_orders": "أوامر العمل النشطة / المعتمدة",
+      "total_invoices": "إجمالي فواتير اليوم"
+    },
+    "quick_actions": {
+      "title": "إجراءات سريعة",
+      "add_car": "إضافة سيارة جديدة",
+      "create_order": "إنشاء أمر عمل",
+      "print_qr": "طباعة رمز QR",
+      "generate_invoice": "إنشاء فاتورة"
+    },
+    "recent_orders": {
+      "title": "أوامر العمل الأخيرة",
+      "view_all": "عرض الكل"
+    }
+  },
+  "common": {
+    "search": "بحث...",
+    "search_placeholder_cars": "البحث عن طريق اللوحة، المالك، أو رقم الهيكل...",
+    "search_placeholder_orders": "البحث في أوامر العمل...",
+    "search_placeholder_invoices": "البحث في الفواتير...",
+    "filter": "تصفية",
+    "actions": "إجراءات",
+    "view_details": "عرض التفاصيل",
+    "view": "عرض",
+    "download": "تحميل PDF",
+    "save": "حفظ التغييرات",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "sar": "ر.س"
+  },
+  "table": {
+    "id": "المعرف",
+    "plate_number": "رقم اللوحة",
+    "owner_name": "اسم المالك",
+    "status": "الحالة",
+    "created_date": "تاريخ الإنشاء",
+    "date": "التاريخ",
+    "amount": "المبلغ",
+    "description": "الوصف",
+    "est_cost": "التكلفة التقديرية",
+    "car_info": "معلومات السيارة",
+    "vin": "رقم الهيكل",
+    "work_order_id": "رقم أمر العمل",
+    "invoice_id": "رقم الفاتورة",
+    "work_order": "أمر العمل"
+  },
+  "status": {
+    "pending": "معلق",
+    "approved": "تمت الموافقة",
+    "completed": "مكتمل",
+    "in_progress": "قيد التنفيذ",
+    "paid": "مدفوع",
+    "unpaid": "غير مدفوع",
+    "active": "نشط"
+  },
+  "cars": {
+    "title": "السيارات",
+    "subtitle": "إدارة المركبات المسجلة",
+    "no_cars": "لم يتم العثور على سيارات مطابقة لبحثك."
+  },
+  "work_orders": {
+    "title": "أوامر العمل",
+    "subtitle": "إدارة طلبات الخدمة والإصلاحات",
+    "no_orders": "لم يتم العثور على أوامر عمل."
+  },
+  "pending_approvals": {
+    "title": "الموافقات المعلقة",
+    "subtitle": "مراجعة والموافقة على أوامر العمل",
+    "no_pending": "لا توجد موافقات معلقة."
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "subtitle": "إدارة الفواتير والمدفوعات",
+    "no_invoices": "لم يتم العثور على فواتير."
+  },
+  "users": {
+    "title": "المستخدمين",
+    "subtitle": "إدارة الوصول للنظام والأدوار"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة تفضيلات التطبيق",
+    "general": "الإعدادات العامة",
+    "workshop_name": "اسم الورشة",
+    "currency": "العملة",
+    "notifications": "الإشعارات",
+    "email_notif": "إشعارات البريد الإلكتروني لأوامر العمل الجديدة",
+    "sms_notif": "إشعارات الرسائل القصيرة للعملاء"
+  }
+}

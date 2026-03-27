@@ -1,0 +1,63 @@
+<div class="min-h-screen flex flex-col md:flex-row bg-white overflow-hidden" [dir]="currentLang() === 'ar' ? 'rtl' : 'ltr'">
+  <!-- Visual Section (Left/Top) -->
+  <div class="w-full md:w-1/2 bg-blue-600 relative overflow-hidden flex flex-col justify-between min-h-[300px] md:min-h-screen">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full border-8 border-white animate-spin-slow"></div>
+        <div class="absolute top-1/2 right-0 w-64 h-64 rounded-full border-8 border-white animate-spin-slow" style="animation-direction: reverse;"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 p-8 md:p-12 text-white mt-10 md:mt-20">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+            <lucide-icon [name]="Car" class="w-8 h-8 text-white"></lucide-icon>
+        </div>
+        <h1 class="text-2xl font-bold">{{ 'app_title' | translate }}</h1>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+        {{ title }}
+      </h2>
+      <p class="text-blue-100 text-lg max-w-md">
+        {{ subtitle }}
+      </p>
+    </div>
+
+    <!-- Car Animation -->
+    <div class="relative z-10 w-full mt-auto">
+        <!-- Road -->
+        <div class="h-24 bg-blue-700 relative overflow-hidden">
+            <div class="absolute top-1/2 left-0 right-0 h-2 bg-white/20"></div>
+            <div class="absolute bottom-4 left-0 right-0 h-4 animate-road"></div>
+        </div>
+        <!-- Car SVG (Simplified Representation) -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-float">
+            <lucide-icon [name]="Car" class="w-32 h-32 text-white drop-shadow-lg"></lucide-icon>
+        </div>
+    </div>
+  </div>
+
+  <!-- Form Section (Right/Bottom) -->
+  <div class="w-full md:w-1/2 flex flex-col relative bg-gray-50">
+    <!-- Language Toggle -->
+    <div class="absolute top-4 right-4 z-20">
+      <button 
+        (click)="toggleLanguage()"
+        class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:shadow-md transition-all text-gray-600 font-medium"
+      >
+        <lucide-icon [name]="Globe" class="w-4 h-4"></lucide-icon>
+        <span>{{ currentLang() === 'en' ? 'العربية' : 'English' }}</span>
+      </button>
+    </div>
+
+    <div class="flex-1 flex items-center justify-center p-6 md:p-12">
+        <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
+            <ng-content></ng-content>
+        </div>
+    </div>
+    
+    <div class="p-6 text-center text-gray-400 text-sm">
+        &copy; {{ currentYear }} {{ 'app_title' | translate }}. All rights reserved.
+    </div>
+  </div>
+</div>

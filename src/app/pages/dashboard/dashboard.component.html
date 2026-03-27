@@ -1,0 +1,72 @@
+<!-- Header -->
+<div>
+  <h2 class="text-2xl font-bold text-gray-900">{{ 'dashboard.title' | translate }}</h2>
+  <p class="text-gray-500 mt-1">{{ 'dashboard.subtitle' | translate }}</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <app-stat-card 
+    [title]="'dashboard.stats.total_cars' | translate" 
+    value="3" 
+    [icon]="Car" 
+    iconColor="text-blue-600" 
+    iconBgColor="bg-blue-50" 
+  ></app-stat-card>
+  <app-stat-card 
+    [title]="'dashboard.stats.pending_orders' | translate" 
+    value="2" 
+    [icon]="Clock" 
+    iconColor="text-yellow-600" 
+    iconBgColor="bg-yellow-50" 
+  ></app-stat-card>
+  <app-stat-card 
+    [title]="'dashboard.stats.active_orders' | translate" 
+    value="2" 
+    [icon]="CheckCircle" 
+    iconColor="text-green-600" 
+    iconBgColor="bg-green-50" 
+  ></app-stat-card>
+  <app-stat-card 
+    [title]="'dashboard.stats.total_invoices' | translate" 
+    [value]="('common.sar' | translate) + ' 0'" 
+    [icon]="DollarSign" 
+    iconColor="text-purple-600" 
+    iconBgColor="bg-purple-50" 
+  ></app-stat-card>
+</div>
+
+<!-- Quick Actions -->
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+  <h3 class="text-lg font-bold text-gray-900 mb-4">{{ 'dashboard.quick_actions.title' | translate }}</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <button 
+      (click)="navigateTo('/cars')"
+      class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+    >
+      <lucide-icon [name]="Plus" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.add_car' | translate }}
+    </button>
+    <button 
+      (click)="navigateTo('/work-orders')"
+      class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+    >
+      <lucide-icon [name]="FileText" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.create_order' | translate }}
+    </button>
+    <button class="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+      <lucide-icon [name]="QrCode" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.print_qr' | translate }}
+    </button>
+    <button 
+      (click)="navigateTo('/invoices')"
+      class="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+    >
+      <lucide-icon [name]="Receipt" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.generate_invoice' | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- Recent Orders -->
+<app-recent-orders></app-recent-orders>

@@ -1,0 +1,137 @@
+{
+  "app_title": "Car Service Management System",
+  "logout": "Logout",
+  "admin": "Admin",
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "cars": "Cars",
+    "work_orders": "Work Orders",
+    "pending_approvals": "Pending Approvals",
+    "invoices": "Invoices",
+    "users": "Users",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login_title": "Sign in to your account",
+    "welcome_back": "Welcome Back",
+    "welcome_subtitle": "Manage your car workshop efficiently with our comprehensive dashboard solution.",
+    "email": "Email address",
+    "password": "Password",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot password?",
+    "login_button": "Sign in",
+    "no_account": "Don't have an account?",
+    "register_button": "Sign up",
+    "join_us": "Join Us Today",
+    "join_subtitle": "Start managing your car workshop professionally with our advanced tools.",
+    "register_title": "Create an account",
+    "name": "Full Name",
+    "confirm_password": "Confirm Password",
+    "have_account": "Already have an account?",
+    "forgot_password_title": "Forgot Password",
+    "forgot_password_subtitle": "Enter your email address and we'll send you a link to reset your password.",
+    "send_reset_link": "Send Reset Link",
+    "back_to_login": "Back to Login",
+    "reset_password_title": "Reset Password",
+    "reset_password_subtitle": "Enter your new password below.",
+    "new_password": "New Password",
+    "reset_password_button": "Reset Password"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to your car service management dashboard",
+    "stats": {
+      "total_cars": "Total Registered Cars",
+      "pending_orders": "Pending Work Orders",
+      "active_orders": "Active / Approved Work Orders",
+      "total_invoices": "Today's Total Invoices"
+    },
+    "quick_actions": {
+      "title": "Quick Actions",
+      "add_car": "Add New Car",
+      "create_order": "Create Work Order",
+      "print_qr": "Print QR Code",
+      "generate_invoice": "Generate Invoice"
+    },
+    "recent_orders": {
+      "title": "Recent Work Orders",
+      "view_all": "View All"
+    }
+  },
+  "common": {
+    "search": "Search...",
+    "search_placeholder_cars": "Search by plate, owner, or VIN...",
+    "search_placeholder_orders": "Search work orders...",
+    "search_placeholder_invoices": "Search invoices...",
+    "filter": "Filter",
+    "actions": "Actions",
+    "view_details": "View Details",
+    "view": "View",
+    "download": "Download PDF",
+    "save": "Save Changes",
+    "edit": "Edit",
+    "delete": "Delete",
+    "approve": "Approve",
+    "reject": "Reject",
+    "sar": "SAR"
+  },
+  "table": {
+    "id": "ID",
+    "plate_number": "Plate Number",
+    "owner_name": "Owner Name",
+    "status": "Status",
+    "created_date": "Created Date",
+    "date": "Date",
+    "amount": "Amount",
+    "description": "Description",
+    "est_cost": "Est. Cost",
+    "car_info": "Car Info",
+    "vin": "VIN",
+    "work_order_id": "Work Order ID",
+    "invoice_id": "Invoice ID",
+    "work_order": "Work Order"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "completed": "Completed",
+    "in_progress": "In Progress",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "active": "Active"
+  },
+  "cars": {
+    "title": "Cars",
+    "subtitle": "Manage registered vehicles",
+    "no_cars": "No cars found matching your search."
+  },
+  "work_orders": {
+    "title": "Work Orders",
+    "subtitle": "Manage service requests and repairs",
+    "no_orders": "No work orders found."
+  },
+  "pending_approvals": {
+    "title": "Pending Approvals",
+    "subtitle": "Review and approve work orders",
+    "no_pending": "No pending approvals found."
+  },
+  "invoices": {
+    "title": "Invoices",
+    "subtitle": "Manage billing and payments",
+    "no_invoices": "No invoices found."
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage system access and roles"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your application preferences",
+    "general": "General Settings",
+    "workshop_name": "Workshop Name",
+    "currency": "Currency",
+    "notifications": "Notifications",
+    "email_notif": "Email notifications for new work orders",
+    "sms_notif": "SMS notifications for customers"
+  }
+}

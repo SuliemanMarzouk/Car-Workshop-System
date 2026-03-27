@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+  
+  body {
+    background-color: #f9fafb;
+    color: #111827;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom Animations */
+@keyframes road-move {
+  from { background-position: 0 0; }
+  to { background-position: 40px 0; }
+}
+
+.animate-road {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    rgba(255, 255, 255, 0.5) 20px,
+    rgba(255, 255, 255, 0.5) 40px
+  );
+  background-size: 40px 100%;
+  animation: road-move 1s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* You can add global styles to this file, and also import other style files */
