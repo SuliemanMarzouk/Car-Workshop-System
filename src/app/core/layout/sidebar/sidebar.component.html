@@ -1,5 +1,5 @@
-<aside class="flex h-full w-full flex-col bg-surface-card py-6">
-  <nav class="flex-1 space-y-1 px-3">
+<aside class="flex h-full min-h-0 w-full flex-col overflow-y-auto overscroll-contain bg-surface-card py-6">
+  <nav class="space-y-1 px-3">
     <a
       *ngFor="let item of menuItems"
       [routerLink]="item.path"

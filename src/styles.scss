@@ -6,9 +6,10 @@
   :root {
     --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
-    --z-header: 20;
     --z-sidebar-backdrop: 25;
-    --z-sidebar: 30;
+    --z-sidebar: 28;
+    --z-header: 32;
+    --shell-header-height: 4rem;
     --z-modal: 100;
 
     --bg-base: #eef2f8;

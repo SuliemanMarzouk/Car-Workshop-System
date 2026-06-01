@@ -1,6 +1,6 @@
-<div class="min-h-screen flex flex-col bg-surface font-sans transition-colors duration-300" [dir]="language.isArabic() ? 'rtl' : 'ltr'">
+<div class="flex h-screen flex-col overflow-hidden bg-surface font-sans transition-colors duration-300" [dir]="language.isArabic() ? 'rtl' : 'ltr'">
   <header
-    class="sticky top-0 z-[var(--z-header)] flex h-16 shrink-0 items-center justify-between border-b border-surface-border px-4 backdrop-blur-xl md:px-6"
+    class="relative z-[var(--z-header)] flex h-16 shrink-0 items-center justify-between border-b border-surface-border px-4 backdrop-blur-xl md:px-6"
     style="background: var(--bg-header)"
   >
     <div class="flex items-center gap-3">
@@ -53,17 +53,17 @@
     </div>
   </header>
 
-  <div class="relative flex min-h-0 flex-1">
+  <div class="relative flex min-h-0 flex-1 overflow-hidden">
     <div
       [ngClass]="{
-        'fixed inset-y-0 z-[var(--z-sidebar)] w-64 transform border-surface-border bg-surface-card shadow-xl transition-transform duration-300 ease-smooth md:relative md:translate-x-0 md:shadow-none pt-16 md:pt-0 border-r': true,
+        'shell-sidebar fixed z-[var(--z-sidebar)] w-64 shrink-0 transform overflow-hidden border-surface-border bg-surface-card shadow-xl transition-transform duration-300 ease-smooth md:relative md:translate-x-0 md:shadow-none border-r': true,
         'right-0': language.isArabic(),
         'left-0': !language.isArabic(),
         'translate-x-0': isSidebarOpen(),
         'translate-x-full': !isSidebarOpen() && language.isArabic(),
         '-translate-x-full': !isSidebarOpen() && !language.isArabic()
       }"
-      class="md:flex md:flex-col"
+      class="flex flex-col"
     >
       <app-sidebar (onClose)="closeSidebar()"></app-sidebar>
     </div>
