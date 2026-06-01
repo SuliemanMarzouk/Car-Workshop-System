@@ -1,0 +1,60 @@
+.error-page {
+  @apply relative flex min-h-[min(70vh,640px)] items-center justify-center px-4 py-10;
+}
+
+.error-glow {
+  @apply pointer-events-none absolute inset-0 mx-auto max-w-lg rounded-full opacity-40 blur-3xl;
+}
+
+.error-accent-forbidden {
+  @apply bg-amber-500/25;
+}
+
+.error-accent-forbidden.error-icon-wrap {
+  @apply bg-amber-500/15 text-amber-600 dark:text-amber-400;
+}
+
+.error-accent-not-found {
+  @apply bg-brand-500/20;
+}
+
+.error-accent-not-found.error-icon-wrap {
+  @apply bg-brand-500/15 text-brand-600 dark:text-brand-400;
+}
+
+.error-card {
+  @apply relative z-10 w-full max-w-lg px-8 py-10 text-center;
+}
+
+.error-icon-wrap {
+  @apply mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl;
+}
+
+.error-icon {
+  @apply h-10 w-10;
+}
+
+.error-code {
+  @apply text-6xl font-extrabold tracking-tight sm:text-7xl;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.error-heading {
+  @apply mt-2 text-xl font-bold text-surface-fg sm:text-2xl;
+}
+
+.error-message {
+  @apply mx-auto mt-3 max-w-md text-sm leading-relaxed text-surface-muted sm:text-base;
+}
+
+.error-actions {
+  @apply mt-8 flex flex-col justify-center gap-3 sm:flex-row;
+}
+
+.error-actions .btn-primary,
+.error-actions .btn-secondary {
+  @apply inline-flex w-full items-center justify-center gap-2 sm:w-auto;
+}

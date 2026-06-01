@@ -15,6 +15,7 @@
     "pending_approvals": "Pending Approvals",
     "invoices": "Invoices",
     "users": "Users",
+    "roles": "Roles & Permissions",
     "settings": "Settings"
   },
   "auth": {
@@ -83,6 +84,7 @@
     "reject": "Reject",
     "cancel": "Cancel",
     "loading": "Loading...",
+    "saving": "Saving...",
     "all": "All",
     "close": "Close",
     "sar": "SAR",
@@ -219,11 +221,65 @@
       "invoice_notes": "Notes"
     }
   },
+  "errors": {
+    "back": "Go back",
+    "home": "Go to dashboard",
+    "forbidden": {
+      "heading": "Access denied",
+      "message": "Sorry, you do not have permission to access this page."
+    },
+    "not_found": {
+      "heading": "Page not found",
+      "message": "The page you are looking for does not exist or may have been moved."
+    }
+  },
+  "roles": {
+    "page_title": "Roles & Permissions",
+    "page_subtitle": "Create roles and assign permissions to control access",
+    "add_role": "Add role",
+    "edit_role": "Edit role",
+    "search_placeholder": "Search roles...",
+    "no_roles": "No roles found",
+    "system_badge": "System",
+    "users_count": "users",
+    "permissions_count": "{{count}} permissions",
+    "name_en": "Name (English)",
+    "name_ar": "Name (Arabic)",
+    "slug": "Identifier (slug)",
+    "slug_hint": "Optional — auto-generated from name if empty",
+    "assign_permissions": "Permissions",
+    "select_all_group": "Select all",
+    "confirm_delete": "Delete this role?",
+    "admin_permissions_locked": "Organization admin always has full access.",
+    "organization_admin": "Organization Admin",
+    "workshop_manager": "Workshop Manager",
+    "receptionist": "Receptionist",
+    "technician": "Technician",
+    "accountant": "Accountant",
+    "viewer": "Viewer",
+    "groups": {
+      "dashboard": "Dashboard",
+      "cars": "Cars",
+      "work_orders": "Work orders",
+      "invoices": "Invoices",
+      "users": "Users",
+      "settings": "Settings",
+      "roles": "Roles & permissions"
+    }
+  },
   "users": {
     "title": "Users",
-    "subtitle": "Manage system access and roles",
-    "role_admin": "Administrator",
-    "only_current": "Showing your account. Team management will be available in a future update."
+    "subtitle": "Manage team members, roles, and access",
+    "add_user": "Add user",
+    "edit_user": "Edit user",
+    "role": "Role",
+    "select_role": "Select a role",
+    "roles_loading": "Loading roles...",
+    "you": "you",
+    "no_users": "No users found",
+    "search_placeholder": "Search by name, email, or role...",
+    "password_optional": "leave blank to keep current",
+    "confirm_delete": "Delete this user?"
   },
   "settings": {
     "title": "Settings",

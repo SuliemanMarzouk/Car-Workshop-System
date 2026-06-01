@@ -1,31 +1,139 @@
 <div class="app-page">
-  <div>
-    <h1 class="page-title">{{ 'users.title' | translate }}</h1>
-    <p class="page-subtitle">{{ 'users.subtitle' | translate }}</p>
-    <p class="mt-2 text-sm text-surface-muted">{{ 'users.only_current' | translate }}</p>
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="page-title">{{ 'users.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'users.subtitle' | translate }}</p>
+    </div>
+    <button
+      *appHasPermission="PERMISSIONS.usersCreate"
+      type="button"
+      (click)="openCreateModal()"
+      class="btn-primary w-full sm:w-auto"
+    >
+      <lucide-icon [name]="Plus" class="h-5 w-5"></lucide-icon>
+      {{ 'users.add_user' | translate }}
+    </button>
   </div>
 
-  <div *ngIf="loading()" class="text-surface-muted">{{ 'common.loading' | translate }}</div>
+  <div class="app-card">
+    <div class="app-card-header">
+      <input
+        type="text"
+        class="input-field max-w-md"
+        [placeholder]="'users.search_placeholder' | translate"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
 
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-    <div *ngFor="let user of users()" class="app-card flex items-start gap-4 p-6">
-      <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-accent-muted">
-        <lucide-icon [name]="User" class="h-6 w-6 text-brand-600"></lucide-icon>
-      </div>
-      <div class="flex-1">
-        <h3 class="text-lg font-bold text-surface-fg">{{ user.name }}</h3>
-        <div class="mt-1 flex items-center gap-2 text-sm text-surface-muted">
-          <lucide-icon [name]="Mail" class="h-3 w-3"></lucide-icon>
-          {{ user.email }}
+    <div *ngIf="loading()" class="p-6 text-surface-muted">{{ 'common.loading' | translate }}</div>
+
+    <div *ngIf="!loading() && filteredUsers().length === 0" class="p-6 text-surface-muted">
+      {{ 'users.no_users' | translate }}
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
+      <div *ngFor="let user of filteredUsers()" class="app-card flex items-start gap-4 p-6">
+        <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-accent-muted">
+          <lucide-icon [name]="User" class="h-6 w-6 text-brand-600"></lucide-icon>
         </div>
-        <div class="mt-1 flex items-center gap-2 text-sm text-surface-muted">
-          <lucide-icon [name]="Shield" class="h-3 w-3"></lucide-icon>
-          {{ 'users.role_admin' | translate }}
-        </div>
-        <div class="mt-4">
-          <span class="badge-completed">{{ 'status.active' | translate }}</span>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-surface-fg">
+            {{ user.name }}
+            <span *ngIf="isCurrentUser(user)" class="ms-2 text-xs font-normal text-surface-muted">
+              ({{ 'users.you' | translate }})
+            </span>
+          </h3>
+          <div class="mt-1 flex items-center gap-2 text-sm text-surface-muted">
+            <lucide-icon [name]="Mail" class="h-3 w-3"></lucide-icon>
+            {{ user.email }}
+          </div>
+          <div class="mt-1 flex items-center gap-2 text-sm text-surface-muted">
+            <lucide-icon [name]="Shield" class="h-3 w-3"></lucide-icon>
+            {{ roleLabel(user) | translate }}
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button
+              *appHasPermission="PERMISSIONS.usersUpdate"
+              type="button"
+              class="btn-secondary !px-3 !py-1.5 text-sm"
+              (click)="openEditModal(user)"
+            >
+              <lucide-icon [name]="Pencil" class="h-4 w-4"></lucide-icon>
+              {{ 'common.edit' | translate }}
+            </button>
+            <button
+              *appHasPermission="PERMISSIONS.usersDelete"
+              type="button"
+              class="btn-danger !px-3 !py-1.5 text-sm"
+              [disabled]="isCurrentUser(user)"
+              (click)="deleteUser(user)"
+            >
+              <lucide-icon [name]="Trash2" class="h-4 w-4"></lucide-icon>
+              {{ 'common.delete' | translate }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<app-modal
+  [isOpen]="isFormModalOpen()"
+  [title]="(editingUser() ? 'users.edit_user' : 'users.add_user') | translate"
+  (onClose)="closeModal()"
+>
+  <form class="space-y-4" (ngSubmit)="saveUser()">
+    <div>
+      <label class="input-label">{{ 'auth.name' | translate }}</label>
+      <input type="text" class="input-field" [(ngModel)]="formData.name" name="name" required />
+      <p *ngIf="errors()['name']" class="mt-1 text-sm text-red-500">{{ errors()['name'][0] }}</p>
+    </div>
+    <div>
+      <label class="input-label">{{ 'auth.email' | translate }}</label>
+      <input type="email" class="input-field" [(ngModel)]="formData.email" name="email" required />
+      <p *ngIf="errors()['email']" class="mt-1 text-sm text-red-500">{{ errors()['email'][0] }}</p>
+    </div>
+    <div>
+      <label class="input-label">
+        {{ 'auth.password' | translate }}
+        <span *ngIf="editingUser()" class="text-surface-muted">({{ 'users.password_optional' | translate }})</span>
+      </label>
+      <input
+        type="password"
+        class="input-field"
+        [(ngModel)]="formData.password"
+        name="password"
+        [required]="!editingUser()"
+      />
+      <p *ngIf="errors()['password']" class="mt-1 text-sm text-red-500">{{ errors()['password'][0] }}</p>
+    </div>
+    <div>
+      <label class="input-label">{{ 'users.role' | translate }}</label>
+      <select
+        class="input-field"
+        [(ngModel)]="formData.role_id"
+        name="role_id"
+        required
+        [disabled]="rolesLoading() || roles().length === 0"
+      >
+        <option [ngValue]="0" disabled hidden>
+          {{ rolesLoading() ? ('users.roles_loading' | translate) : ('users.select_role' | translate) }}
+        </option>
+        <option *ngFor="let role of roles()" [ngValue]="role.id">
+          {{ roleOptionLabel(role) | translate }}
+        </option>
+      </select>
+      <p *ngIf="errors()['role_id']" class="mt-1 text-sm text-red-500">{{ errors()['role_id'][0] }}</p>
+    </div>
+    <div class="flex justify-end gap-3 pt-2">
+      <button type="button" class="btn-secondary" (click)="closeModal()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="saving()">
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
+      </button>
+    </div>
+  </form>
+</app-modal>

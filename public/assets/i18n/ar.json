@@ -15,6 +15,7 @@
     "pending_approvals": "الموافقات المعلقة",
     "invoices": "الفواتير",
     "users": "المستخدمين",
+    "roles": "الأدوار والصلاحيات",
     "settings": "الإعدادات"
   },
   "auth": {
@@ -83,6 +84,7 @@
     "reject": "رفض",
     "cancel": "إلغاء",
     "loading": "جاري التحميل...",
+    "saving": "جاري الحفظ...",
     "all": "الكل",
     "close": "إغلاق",
     "sar": "ر.س",
@@ -219,11 +221,65 @@
       "invoice_notes": "ملاحظات"
     }
   },
+  "errors": {
+    "back": "رجوع",
+    "home": "الذهاب للوحة التحكم",
+    "forbidden": {
+      "heading": "غير مسموح",
+      "message": "عذراً، ليس لديك صلاحية للوصول لهذه الصفحة."
+    },
+    "not_found": {
+      "heading": "الصفحة غير موجودة",
+      "message": "الصفحة التي تبحث عنها غير موجودة أو ربما نُقلت إلى عنوان آخر."
+    }
+  },
+  "roles": {
+    "page_title": "الأدوار والصلاحيات",
+    "page_subtitle": "إنشاء الأدوار وإسناد الصلاحيات للتحكم بالوصول",
+    "add_role": "إضافة دور",
+    "edit_role": "تعديل دور",
+    "search_placeholder": "بحث في الأدوار...",
+    "no_roles": "لا توجد أدوار",
+    "system_badge": "نظام",
+    "users_count": "مستخدم",
+    "permissions_count": "{{count}} صلاحية",
+    "name_en": "الاسم (إنجليزي)",
+    "name_ar": "الاسم (عربي)",
+    "slug": "المعرّف (slug)",
+    "slug_hint": "اختياري — يُولَّد تلقائياً من الاسم إن تُرك فارغاً",
+    "assign_permissions": "الصلاحيات",
+    "select_all_group": "تحديد الكل",
+    "confirm_delete": "حذف هذا الدور؟",
+    "admin_permissions_locked": "مسؤول التنظيم يملك دائماً صلاحيات كاملة.",
+    "organization_admin": "مسؤول التنظيم",
+    "workshop_manager": "مدير الورشة",
+    "receptionist": "موظف استقبال",
+    "technician": "فني",
+    "accountant": "محاسب",
+    "viewer": "مشاهد",
+    "groups": {
+      "dashboard": "لوحة التحكم",
+      "cars": "السيارات",
+      "work_orders": "أوامر العمل",
+      "invoices": "الفواتير",
+      "users": "المستخدمين",
+      "settings": "الإعدادات",
+      "roles": "الأدوار والصلاحيات"
+    }
+  },
   "users": {
     "title": "المستخدمين",
-    "subtitle": "إدارة الوصول للنظام والأدوار",
-    "role_admin": "مسؤول النظام",
-    "only_current": "يعرض حسابك الحالي. إدارة الفريق ستتوفر في تحديث لاحق."
+    "subtitle": "إدارة أعضاء الفريق والأدوار والصلاحيات",
+    "add_user": "إضافة مستخدم",
+    "edit_user": "تعديل مستخدم",
+    "role": "الدور",
+    "select_role": "اختر الدور",
+    "roles_loading": "جاري تحميل الأدوار...",
+    "you": "أنت",
+    "no_users": "لا يوجد مستخدمون",
+    "search_placeholder": "بحث بالاسم أو البريد أو الدور...",
+    "password_optional": "اتركه فارغاً للإبقاء على الحالي",
+    "confirm_delete": "حذف هذا المستخدم؟"
   },
   "settings": {
     "title": "الإعدادات",

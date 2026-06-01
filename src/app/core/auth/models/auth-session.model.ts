@@ -1,7 +1,16 @@
+export interface UserRole {
+  id: number;
+  slug: string;
+  name: string;
+  name_ar: string;
+}
+
 export interface AuthUser {
   id: number;
   name: string;
   email: string;
+  role?: UserRole | null;
+  permissions?: string[];
 }
 
 export interface AuthLoginResponse {

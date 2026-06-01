@@ -1,0 +1,26 @@
+export const PERMISSIONS = {
+  dashboardView: 'dashboard.view',
+  carsView: 'cars.view',
+  carsCreate: 'cars.create',
+  carsUpdate: 'cars.update',
+  carsDelete: 'cars.delete',
+  workOrdersView: 'work_orders.view',
+  workOrdersCreate: 'work_orders.create',
+  workOrdersUpdate: 'work_orders.update',
+  workOrdersDelete: 'work_orders.delete',
+  workOrdersApprove: 'work_orders.approve',
+  invoicesView: 'invoices.view',
+  invoicesCreate: 'invoices.create',
+  usersView: 'users.view',
+  usersCreate: 'users.create',
+  usersUpdate: 'users.update',
+  usersDelete: 'users.delete',
+  settingsView: 'settings.view',
+  settingsUpdate: 'settings.update',
+  rolesView: 'roles.view',
+  rolesCreate: 'roles.create',
+  rolesUpdate: 'roles.update',
+  rolesDelete: 'roles.delete',
+} as const;
+
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

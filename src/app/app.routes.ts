@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, publicGuard } from '@core/auth/guards/auth.guard';
+import { permissionGuard } from '@core/auth/guards/permission.guard';
+import { PERMISSIONS } from '@core/auth/models/permission';
 
 export const routes: Routes = [
   {
@@ -37,16 +39,32 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'forbidden',
+        loadComponent: () =>
+          import('@features/errors/pages/forbidden/forbidden.component').then(
+            (m) => m.ForbiddenComponent,
+          ),
+      },
+      {
+        path: 'not-found',
+        loadComponent: () =>
+          import('@features/errors/pages/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+      },
+      {
         path: '',
         loadComponent: () =>
           import('@features/dashboard/pages/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent,
           ),
+        canActivate: [permissionGuard(PERMISSIONS.dashboardView)],
       },
       {
         path: 'cars',
         loadComponent: () =>
           import('@features/cars/pages/car-list/car-list.component').then((m) => m.CarListComponent),
+        canActivate: [permissionGuard(PERMISSIONS.carsView)],
       },
       {
         path: 'work-orders',
@@ -54,6 +72,7 @@ export const routes: Routes = [
           import('@features/work-orders/pages/work-order-list/work-order-list.component').then(
             (m) => m.WorkOrderListComponent,
           ),
+        canActivate: [permissionGuard(PERMISSIONS.workOrdersView)],
       },
       {
         path: 'pending-approvals',
@@ -61,6 +80,7 @@ export const routes: Routes = [
           import(
             '@features/pending-approvals/pages/pending-approval-list/pending-approval-list.component'
           ).then((m) => m.PendingApprovalListComponent),
+        canActivate: [permissionGuard(PERMISSIONS.workOrdersApprove)],
       },
       {
         path: 'invoices',
@@ -68,6 +88,7 @@ export const routes: Routes = [
           import('@features/invoices/pages/invoice-list/invoice-list.component').then(
             (m) => m.InvoiceListComponent,
           ),
+        canActivate: [permissionGuard(PERMISSIONS.invoicesView)],
       },
       {
         path: 'users',
@@ -75,6 +96,15 @@ export const routes: Routes = [
           import('@features/users/pages/user-list/user-list.component').then(
             (m) => m.UserListComponent,
           ),
+        canActivate: [permissionGuard(PERMISSIONS.usersView)],
+      },
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('@features/roles/pages/role-list/role-list.component').then(
+            (m) => m.RoleListComponent,
+          ),
+        canActivate: [permissionGuard(PERMISSIONS.rolesView)],
       },
       {
         path: 'settings',
@@ -82,7 +112,22 @@ export const routes: Routes = [
           import('@features/settings/pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
           ),
+        canActivate: [permissionGuard(PERMISSIONS.settingsView)],
+      },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('@features/errors/pages/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
       },
     ],
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('@features/errors/pages/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
   },
 ];

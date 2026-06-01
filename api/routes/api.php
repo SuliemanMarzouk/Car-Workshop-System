@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\V1\CarController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
+use App\Http\Controllers\Api\V1\PermissionController;
+use App\Http\Controllers\Api\V1\RoleController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,10 +20,66 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
-        Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
-        Route::apiResource('cars', CarController::class);
-        Route::apiResource('work-orders', WorkOrderController::class);
-        Route::apiResource('invoices', InvoiceController::class)->except(['update', 'destroy']);
+        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+            ->middleware('permission:dashboard.view');
+
+        Route::get('/permissions', [PermissionController::class, 'index'])
+            ->middleware('permission:roles.view,roles.create,roles.update');
+
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->middleware('permission:roles.view,users.create,users.update');
+        Route::post('/roles', [RoleController::class, 'store'])
+            ->middleware('permission:roles.create');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])
+            ->middleware('permission:roles.update');
+        Route::patch('/roles/{role}', [RoleController::class, 'update'])
+            ->middleware('permission:roles.update');
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
+            ->middleware('permission:roles.delete');
+
+        Route::get('/users', [UserController::class, 'index'])
+            ->middleware('permission:users.view');
+        Route::post('/users', [UserController::class, 'store'])
+            ->middleware('permission:users.create');
+        Route::put('/users/{user}', [UserController::class, 'update'])
+            ->middleware('permission:users.update');
+        Route::patch('/users/{user}', [UserController::class, 'update'])
+            ->middleware('permission:users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])
+            ->middleware('permission:users.delete');
+
+        Route::get('/cars', [CarController::class, 'index'])
+            ->middleware('permission:cars.view');
+        Route::post('/cars', [CarController::class, 'store'])
+            ->middleware('permission:cars.create');
+        Route::get('/cars/{car}', [CarController::class, 'show'])
+            ->middleware('permission:cars.view');
+        Route::put('/cars/{car}', [CarController::class, 'update'])
+            ->middleware('permission:cars.update');
+        Route::patch('/cars/{car}', [CarController::class, 'update'])
+            ->middleware('permission:cars.update');
+        Route::delete('/cars/{car}', [CarController::class, 'destroy'])
+            ->middleware('permission:cars.delete');
+
+        Route::get('/work-orders', [WorkOrderController::class, 'index'])
+            ->middleware('permission:work_orders.view');
+        Route::post('/work-orders', [WorkOrderController::class, 'store'])
+            ->middleware('permission:work_orders.create');
+        Route::get('/work-orders/{work_order}', [WorkOrderController::class, 'show'])
+            ->middleware('permission:work_orders.view');
+        Route::put('/work-orders/{work_order}', [WorkOrderController::class, 'update'])
+            ->middleware('permission:work_orders.update');
+        Route::patch('/work-orders/{work_order}', [WorkOrderController::class, 'update'])
+            ->middleware('permission:work_orders.update');
+        Route::delete('/work-orders/{work_order}', [WorkOrderController::class, 'destroy'])
+            ->middleware('permission:work_orders.delete');
+
+        Route::get('/invoices', [InvoiceController::class, 'index'])
+            ->middleware('permission:invoices.view');
+        Route::post('/invoices', [InvoiceController::class, 'store'])
+            ->middleware('permission:invoices.create');
+        Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
+            ->middleware('permission:invoices.view');
     });
 });

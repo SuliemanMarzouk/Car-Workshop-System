@@ -21,6 +21,7 @@ class LoginUserAction
         }
 
         $user = User::query()
+            ->with('role.permissions')
             ->where('email', $credentials->email)
             ->firstOrFail();
 

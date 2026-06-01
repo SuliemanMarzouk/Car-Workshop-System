@@ -6,19 +6,6 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-modal, 100);
-  @apply animate-fade-in;
-}
-
-.app-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / 60%);
-  backdrop-filter: blur(4px);
-}
-
-.app-modal-panel-wrap {
-  position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,10 +14,14 @@
     max(0.75rem, env(safe-area-inset-bottom))
     max(0.75rem, env(safe-area-inset-left));
   overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgb(2 6 23 / 0.78);
+  isolation: isolate;
 }
 
 .app-modal-panel {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -40,7 +31,9 @@
   border: 1px solid var(--border-default);
   background: var(--bg-card);
   text-align: start;
-  box-shadow: var(--shadow-card-hover);
+  box-shadow:
+    0 24px 48px rgb(15 23 42 / 0.2),
+    0 0 0 1px rgb(15 23 42 / 0.05);
   @apply animate-scale-in;
 }
 

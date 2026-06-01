@@ -1,0 +1,168 @@
+<div class="app-page">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="page-title">{{ 'roles.page_title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'roles.page_subtitle' | translate }}</p>
+    </div>
+    <button
+      *appHasPermission="PERMISSIONS.rolesCreate"
+      type="button"
+      class="btn-primary w-full sm:w-auto"
+      (click)="openCreateModal()"
+    >
+      <lucide-icon [name]="Plus" class="h-5 w-5"></lucide-icon>
+      {{ 'roles.add_role' | translate }}
+    </button>
+  </div>
+
+  <div class="app-card">
+    <div class="app-card-header">
+      <input
+        type="text"
+        class="input-field max-w-md"
+        [placeholder]="'roles.search_placeholder' | translate"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+
+    <div *ngIf="loading()" class="p-6 text-surface-muted">{{ 'common.loading' | translate }}</div>
+
+    <div *ngIf="!loading() && filteredRoles().length === 0" class="p-6 text-surface-muted">
+      {{ 'roles.no_roles' | translate }}
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 p-6 lg:grid-cols-2">
+      <div *ngFor="let role of filteredRoles()" class="app-card p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-muted">
+              <lucide-icon [name]="Shield" class="h-5 w-5 text-brand-600"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-bold text-surface-fg">{{ roleDisplayName(role) }}</h3>
+              <p class="text-sm text-surface-muted">{{ role.slug }}</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span *ngIf="role.is_system" class="badge-pending text-xs">
+                  {{ 'roles.system_badge' | translate }}
+                </span>
+                <span class="inline-flex items-center gap-1 text-xs text-surface-muted">
+                  <lucide-icon [name]="Users" class="h-3 w-3"></lucide-icon>
+                  {{ role.users_count ?? 0 }} {{ 'roles.users_count' | translate }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-3 text-sm text-surface-muted">
+          {{ 'roles.permissions_count' | translate: { count: role.permissions.length } }}
+        </p>
+
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button
+            *appHasPermission="PERMISSIONS.rolesUpdate"
+            type="button"
+            class="btn-secondary !px-3 !py-1.5 text-sm"
+            (click)="openEditModal(role)"
+          >
+            <lucide-icon [name]="Pencil" class="h-4 w-4"></lucide-icon>
+            {{ 'common.edit' | translate }}
+          </button>
+          <button
+            *appHasPermission="PERMISSIONS.rolesDelete"
+            type="button"
+            class="btn-danger !px-3 !py-1.5 text-sm"
+            [disabled]="role.is_system || (role.users_count ?? 0) > 0"
+            (click)="deleteRole(role)"
+          >
+            <lucide-icon [name]="Trash2" class="h-4 w-4"></lucide-icon>
+            {{ 'common.delete' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-modal
+  [isOpen]="isFormModalOpen()"
+  [title]="(editingRole() ? 'roles.edit_role' : 'roles.add_role') | translate"
+  (onClose)="closeModal()"
+  size="lg"
+>
+  <form class="space-y-5" (ngSubmit)="saveRole()">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label class="input-label">{{ 'roles.name_en' | translate }}</label>
+        <input type="text" class="input-field" [(ngModel)]="formData.name" name="name" required />
+        <p *ngIf="errors()['name']" class="mt-1 text-sm text-red-500">{{ errors()['name'][0] }}</p>
+      </div>
+      <div>
+        <label class="input-label">{{ 'roles.name_ar' | translate }}</label>
+        <input type="text" class="input-field" [(ngModel)]="formData.name_ar" name="name_ar" required />
+        <p *ngIf="errors()['name_ar']" class="mt-1 text-sm text-red-500">{{ errors()['name_ar'][0] }}</p>
+      </div>
+    </div>
+
+    <div>
+      <label class="input-label">{{ 'roles.slug' | translate }}</label>
+      <input
+        type="text"
+        class="input-field font-mono text-sm"
+        [(ngModel)]="formData.slug"
+        name="slug"
+        [readonly]="!!editingRole()?.is_system"
+        [placeholder]="'roles.slug_hint' | translate"
+      />
+      <p *ngIf="errors()['slug']" class="mt-1 text-sm text-red-500">{{ errors()['slug'][0] }}</p>
+    </div>
+
+    <div *ngIf="isOrgAdminRole()" class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-200">
+      {{ 'roles.admin_permissions_locked' | translate }}
+    </div>
+
+    <div class="space-y-4">
+      <h4 class="font-semibold text-surface-fg">{{ 'roles.assign_permissions' | translate }}</h4>
+
+      <div *ngFor="let group of permissionGroups()" class="rounded-xl border border-surface-border p-4">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <span class="font-medium text-surface-fg">{{ groupLabel(group[0]) }}</span>
+          <label class="flex items-center gap-2 text-sm text-surface-muted" *ngIf="!isOrgAdminRole()">
+            <input
+              type="checkbox"
+              [checked]="isGroupFullySelected(group[0])"
+              (change)="toggleGroup(group[0], $any($event.target).checked)"
+            />
+            {{ 'roles.select_all_group' | translate }}
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <label
+            *ngFor="let permission of group[1]"
+            class="flex cursor-pointer items-center gap-2 rounded-lg border border-surface-border px-3 py-2 text-sm hover:bg-surface-elevated"
+          >
+            <input
+              type="checkbox"
+              [checked]="isPermissionChecked(permission.slug)"
+              [disabled]="isOrgAdminRole()"
+              (change)="togglePermission(permission.slug, $any($event.target).checked)"
+            />
+            <span>{{ permissionLabel(permission) }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <p *ngIf="errors()['permissions']" class="text-sm text-red-500">{{ errors()['permissions'][0] }}</p>
+
+    <div class="flex justify-end gap-3 pt-2">
+      <button type="button" class="btn-secondary" (click)="closeModal()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="saving() || formData.permissions.length === 0">
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
+      </button>
+    </div>
+  </form>
+</app-modal>

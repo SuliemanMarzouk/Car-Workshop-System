@@ -4,25 +4,18 @@
     aria-labelledby="modal-title"
     role="dialog"
     aria-modal="true"
+    (click)="close()"
   >
-    <div class="app-modal-backdrop" (click)="close()"></div>
-
-    <div class="app-modal-panel-wrap">
-      <div class="app-modal-panel" [ngClass]="getPanelClasses()">
-        <div class="app-modal-panel__header">
-          <h3 class="app-modal-panel__title" id="modal-title">{{ title }}</h3>
-          <button
-            type="button"
-            class="app-modal-panel__close"
-            (click)="close()"
-          >
-            <span class="sr-only">Close</span>
-            <lucide-icon [name]="X" class="h-6 w-6"></lucide-icon>
-          </button>
-        </div>
-        <div class="app-modal-panel__body">
-          <ng-content></ng-content>
-        </div>
+    <div class="app-modal-panel" [ngClass]="getPanelClasses()" (click)="$event.stopPropagation()">
+      <div class="app-modal-panel__header">
+        <h3 class="app-modal-panel__title" id="modal-title">{{ title }}</h3>
+        <button type="button" class="app-modal-panel__close" (click)="close()">
+          <span class="sr-only">Close</span>
+          <lucide-icon [name]="X" class="h-6 w-6"></lucide-icon>
+        </button>
+      </div>
+      <div class="app-modal-panel__body">
+        <ng-content></ng-content>
       </div>
     </div>
   </div>

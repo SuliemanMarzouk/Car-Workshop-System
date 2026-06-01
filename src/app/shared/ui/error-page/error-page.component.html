@@ -1,0 +1,24 @@
+<div class="error-page animate-slide-up">
+  <div class="error-glow" [class]="config().accentClass"></div>
+
+  <div class="error-card app-card">
+    <div class="error-icon-wrap" [ngClass]="config().accentClass">
+      <lucide-icon [name]="config().icon" class="error-icon"></lucide-icon>
+    </div>
+
+    <p class="error-code">{{ config().code }}</p>
+    <h1 class="error-heading">{{ config().headingKey | translate }}</h1>
+    <p class="error-message">{{ config().messageKey | translate }}</p>
+
+    <div class="error-actions">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        <lucide-icon [name]="ArrowLeft" class="h-4 w-4"></lucide-icon>
+        {{ 'errors.back' | translate }}
+      </button>
+      <a [routerLink]="homeRoute()" class="btn-primary">
+        <lucide-icon [name]="Home" class="h-4 w-4"></lucide-icon>
+        {{ 'errors.home' | translate }}
+      </a>
+    </div>
+  </div>
+</div>
