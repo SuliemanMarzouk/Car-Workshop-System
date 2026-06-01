@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiClient } from '@core/http/api-client.service';
+import { unwrapResource } from '@core/http/api-response.util';
 import { PaginatedResponse } from '@shared/models/paginated-response.model';
 import {
   CreateWorkOrderPayload,
@@ -17,7 +18,9 @@ export class WorkOrderRepository {
   }
 
   getById(id: number): Observable<WorkOrder> {
-    return this.api.get<WorkOrder>(`/work-orders/${id}`);
+    return this.api.get<WorkOrder | { data: WorkOrder }>(`/work-orders/${id}`).pipe(
+      map((response) => unwrapResource(response)),
+    );
   }
 
   create(payload: CreateWorkOrderPayload): Observable<WorkOrder> {

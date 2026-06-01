@@ -8,7 +8,7 @@
     <app-stat-card
       class="stagger-1 block"
       [title]="'dashboard.stats.total_cars' | translate"
-      value="3"
+      [value]="loading() ? '...' : totalCars()"
       [icon]="Car"
       iconColor="text-brand-600 dark:text-brand-400"
       iconBgColor="bg-brand-100 dark:bg-brand-900/40"
@@ -16,7 +16,7 @@
     <app-stat-card
       class="stagger-2 block"
       [title]="'dashboard.stats.pending_orders' | translate"
-      value="2"
+      [value]="loading() ? '...' : pendingOrders()"
       [icon]="Clock"
       iconColor="text-amber-600 dark:text-amber-400"
       iconBgColor="bg-amber-100 dark:bg-amber-900/40"
@@ -24,7 +24,7 @@
     <app-stat-card
       class="stagger-3 block"
       [title]="'dashboard.stats.active_orders' | translate"
-      value="2"
+      [value]="loading() ? '...' : approvedOrders()"
       [icon]="CheckCircle"
       iconColor="text-emerald-600 dark:text-emerald-400"
       iconBgColor="bg-emerald-100 dark:bg-emerald-900/40"
@@ -32,7 +32,7 @@
     <app-stat-card
       class="stagger-4 block"
       [title]="'dashboard.stats.total_invoices' | translate"
-      [value]="('common.sar' | translate) + ' 0'"
+      [value]="loading() ? '...' : (('common.sar' | translate) + ' ' + invoicesToday())"
       [icon]="DollarSign"
       iconColor="text-violet-600 dark:text-violet-400"
       iconBgColor="bg-violet-100 dark:bg-violet-900/40"
@@ -50,7 +50,7 @@
         <lucide-icon [name]="FileText" class="h-5 w-5"></lucide-icon>
         {{ 'dashboard.quick_actions.create_order' | translate }}
       </button>
-      <button type="button" class="btn-ghost w-full border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30">
+      <button type="button" (click)="printQrPlaceholder()" class="btn-ghost w-full border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30">
         <lucide-icon [name]="QrCode" class="h-5 w-5"></lucide-icon>
         {{ 'dashboard.quick_actions.print_qr' | translate }}
       </button>

@@ -17,9 +17,13 @@ class InvoiceResource extends JsonResource
         return [
             'id' => $this->id,
             'work_order_id' => $this->work_order_id,
+            'bill_to_name' => $this->bill_to_name,
+            'bill_to_address' => $this->bill_to_address,
+            'discount_amount' => $this->discount_amount,
             'subtotal' => $this->subtotal,
             'tax' => $this->tax,
             'total' => $this->total,
+            'notes' => $this->notes,
             'work_order' => new WorkOrderResource($this->whenLoaded('workOrder')),
             'created_at' => $this->created_at,
         ];

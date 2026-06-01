@@ -4,12 +4,12 @@
       <h1 class="page-title">{{ 'invoices.title' | translate }}</h1>
       <p class="page-subtitle mt-1">{{ 'invoices.subtitle' | translate }}</p>
     </div>
-    <button 
+    <button
       (click)="onAddModalOpen()"
       class="flex items-center justify-center gap-2 btn-primary w-full sm:w-auto"
     >
       <lucide-icon [name]="Plus" class="w-5 h-5"></lucide-icon>
-      {{ 'dashboard.quick_actions.generate_invoice' | translate }}
+      {{ 'invoices.create.issue_invoice' | translate }}
     </button>
   </div>
 
@@ -39,12 +39,12 @@
             <th class="px-6 py-3 font-medium text-xs text-start">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
-        <tbody class="">
+        <tbody>
           <tr *ngIf="loading()">
-            <td colSpan="6" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+            <td colSpan="6" class="px-6 py-8 text-center text-surface-muted">{{ 'common.loading' | translate }}</td>
           </tr>
           <tr *ngFor="let invoice of filteredInvoices" class="table-row">
-            <td class="px-6 py-4 font-medium text-gray-900 text-start">{{ invoice.id }}</td>
+            <td class="px-6 py-4 font-medium text-gray-900 text-start">{{ formatInvoiceNumber(invoice.id) }}</td>
             <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.plate_number }}</td>
             <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.owner_name }}</td>
             <td class="px-6 py-4 text-start">
@@ -52,17 +52,24 @@
                 {{ 'status.paid' | translate }}
               </span>
             </td>
-            <td class="px-6 py-4 text-gray-900 font-bold text-start">{{ invoice.total }} {{ 'common.sar' | translate }}</td>
+            <td class="px-6 py-4 text-gray-900 font-bold text-start">
+              {{ billing.formatMoney(+invoice.total) }} {{ 'common.sar' | translate }}
+            </td>
             <td class="px-6 py-4 text-start">
               <div class="flex items-center gap-3">
-                <button 
+                <button
                   (click)="handleViewDetails(invoice)"
-                  class="text-gray-400 hover:text-blue-600 transition-colors" 
+                  class="text-gray-400 hover:text-blue-600 transition-colors"
                   [title]="'common.view_details' | translate"
                 >
                   <lucide-icon [name]="Eye" class="w-4 h-4"></lucide-icon>
                 </button>
-                <button class="text-gray-400 hover:text-blue-600 transition-colors" [title]="'common.download' | translate">
+                <button
+                  type="button"
+                  (click)="downloadInvoice(invoice)"
+                  class="text-surface-muted hover:text-brand-600 transition-colors"
+                  [title]="'common.download' | translate"
+                >
                   <lucide-icon [name]="Download" class="w-4 h-4"></lucide-icon>
                 </button>
               </div>
@@ -73,59 +80,221 @@
     </div>
   </div>
 
-  <!-- Generate Invoice Modal -->
-  <app-modal 
-    [isOpen]="isAddModalOpen()" 
-    [title]="'dashboard.quick_actions.generate_invoice' | translate" 
-    (onClose)="isAddModalOpen.set(false)"
+  <!-- Create invoice (billing workflow) -->
+  <app-modal
+    [isOpen]="isAddModalOpen()"
+    [title]="'invoices.create.title' | translate"
+    size="xl"
+    (onClose)="closeCreateModal()"
   >
-    <form (ngSubmit)="handleSubmit()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Work Order</label>
-        <select 
-          [(ngModel)]="formData.work_order_id" 
-          name="work_order_id"
-          (change)="handleWorkOrderSelect($event)"
-          class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-        >
-          <option value="">Select an approved work order</option>
-          <option *ngFor="let wo of workOrders()" [value]="wo.id">
-            WO-{{ wo.id }} ({{ wo.car?.plate_number }})
-          </option>
-        </select>
-        <p *ngIf="errors()['work_order_id']" class="mt-1 text-xs text-red-600">{{ errors()['work_order_id'][0] }}</p>
+    <form (ngSubmit)="handleSubmit($event)" class="space-y-6">
+      <p class="text-sm text-surface-muted">{{ 'invoices.create.subtitle' | translate }}</p>
+
+      <div class="invoice-create-layout grid gap-4 lg:grid-cols-2 lg:gap-6">
+        <!-- Left: source & line items -->
+        <div class="min-w-0 space-y-4 lg:max-h-[calc(90dvh-11rem)] lg:overflow-y-auto lg:pe-1">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoices.create.source_work_order' | translate }}</label>
+            <select
+              [ngModel]="workOrderId"
+              name="work_order_id"
+              (change)="onWorkOrderChange($event)"
+              class="input-field"
+              required
+            >
+              <option value="">{{ 'invoices.select_work_order' | translate }}</option>
+              <option *ngFor="let wo of workOrders()" [value]="wo.id">
+                WO-{{ wo.id }} · {{ wo.car?.plate_number }} · {{ wo.car?.owner_name }}
+              </option>
+            </select>
+            <p *ngIf="errors()['work_order_id']" class="mt-1 text-xs text-red-600">{{ errors()['work_order_id'][0] }}</p>
+            <p *ngIf="workOrders().length === 0 && !loadingWorkOrder()" class="mt-2 text-xs text-amber-600">
+              {{ 'invoices.create.no_eligible_orders' | translate }}
+            </p>
+          </div>
+
+          <div *ngIf="loadingWorkOrder()" class="text-sm text-surface-muted">{{ 'common.loading' | translate }}</div>
+
+          <ng-container *ngIf="selectedWorkOrder() as wo">
+            <div class="rounded-xl border border-surface-border bg-surface-elevated p-4 space-y-4">
+              <h4 class="text-sm font-semibold text-surface-fg">{{ 'invoices.create.billing_details' | translate }}</h4>
+              <p class="text-xs text-surface-muted">{{ 'invoices.create.billing_details_hint' | translate }}</p>
+
+              <div>
+                <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoice.template.bill_to' | translate }}</label>
+                <input
+                  type="text"
+                  [(ngModel)]="billingForm.billToName"
+                  name="billToName"
+                  (ngModelChange)="onBillingChanged()"
+                  class="input-field"
+                  required
+                />
+                <p *ngIf="errors()['bill_to_name']" class="mt-1 text-xs text-red-600">{{ errors()['bill_to_name'][0] }}</p>
+              </div>
+
+              <div>
+                <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoices.create.bill_to_address' | translate }}</label>
+                <textarea
+                  [(ngModel)]="billingForm.billToAddress"
+                  name="billToAddress"
+                  (ngModelChange)="onBillingChanged()"
+                  rows="2"
+                  class="input-field"
+                  [placeholder]="'invoices.create.bill_to_address_placeholder' | translate"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoice.template.discount' | translate }}</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  [(ngModel)]="billingForm.discountAmount"
+                  name="discountAmount"
+                  (ngModelChange)="onBillingChanged()"
+                  class="input-field"
+                />
+                <p class="mt-1 text-xs text-surface-muted">{{ 'invoices.create.discount_hint' | translate }}</p>
+                <p *ngIf="errors()['discount_amount']" class="mt-1 text-xs text-red-600">{{ errors()['discount_amount'][0] }}</p>
+              </div>
+
+              <div>
+                <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoice.template.invoice_notes' | translate }}</label>
+                <textarea
+                  [(ngModel)]="billingForm.notes"
+                  name="notes"
+                  (ngModelChange)="onBillingChanged()"
+                  rows="2"
+                  class="input-field"
+                  [placeholder]="'invoices.create.notes_placeholder' | translate"
+                ></textarea>
+              </div>
+
+              <div class="border-t border-surface-border pt-3 text-sm text-surface-muted">
+                <p>{{ 'invoice.template.plate' | translate }}: {{ wo.car?.plate_number }}</p>
+                <p *ngIf="wo.car?.vin">{{ 'invoice.template.vin' | translate }}: {{ wo.car?.vin }}</p>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-surface-border overflow-hidden">
+              <div class="border-b border-surface-border bg-surface-elevated px-4 py-2">
+                <h4 class="text-sm font-semibold text-surface-fg">{{ 'invoices.create.line_items' | translate }}</h4>
+              </div>
+              <table class="w-full text-sm">
+                <thead class="table-head">
+                  <tr>
+                    <th class="px-4 py-2 text-start">#</th>
+                    <th class="px-4 py-2 text-start">{{ 'invoice.template.description' | translate }}</th>
+                    <th class="px-4 py-2 text-center">{{ 'invoice.template.qty' | translate }}</th>
+                    <th class="px-4 py-2 text-end">{{ 'invoice.template.amount' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of wo.items; let i = index" class="border-t border-surface-border">
+                    <td class="px-4 py-2">{{ i + 1 }}</td>
+                    <td class="px-4 py-2">{{ item.description }}</td>
+                    <td class="px-4 py-2 text-center">1</td>
+                    <td class="px-4 py-2 text-end font-medium">
+                      {{ billing.formatMoney(+item.price!) }} {{ 'common.sar' | translate }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-container *ngIf="draftTotals() as totals">
+              <div class="rounded-xl border border-surface-border p-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-surface-muted">{{ 'invoices.subtotal' | translate }}</span>
+                  <span class="font-medium">{{ billing.formatMoney(totals.subtotal) }} {{ 'common.sar' | translate }}</span>
+                </div>
+                <div *ngIf="totals.discount > 0" class="flex justify-between text-sm text-amber-700">
+                  <span>{{ 'invoice.template.discount' | translate }}</span>
+                  <span class="font-medium">−{{ billing.formatMoney(totals.discount) }} {{ 'common.sar' | translate }}</span>
+                </div>
+                <div *ngIf="totals.discount > 0" class="flex justify-between text-sm">
+                  <span class="text-surface-muted">{{ 'invoice.template.taxable_amount' | translate }}</span>
+                  <span class="font-medium">{{ billing.formatMoney(totals.taxable) }} {{ 'common.sar' | translate }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-surface-muted">{{ 'invoice.template.vat_line' | translate : { rate: totals.taxRatePercent } }}</span>
+                  <span class="font-medium">{{ billing.formatMoney(totals.tax) }} {{ 'common.sar' | translate }}</span>
+                </div>
+                <div class="flex justify-between border-t border-surface-border pt-2 text-base font-bold">
+                  <span>{{ 'invoice.template.total_due' | translate }}</span>
+                  <span class="text-brand-600">{{ billing.formatMoney(totals.total) }} {{ 'common.sar' | translate }}</span>
+                </div>
+              </div>
+            </ng-container>
+
+            <div class="grid gap-3 sm:grid-cols-2 text-sm">
+              <div class="rounded-lg border border-surface-border px-3 py-2">
+                <span class="text-surface-muted">{{ 'invoice.template.issue_date' | translate }}</span>
+                <p class="font-medium text-surface-fg">{{ 'invoices.create.today' | translate }}</p>
+              </div>
+              <div class="rounded-lg border border-surface-border px-3 py-2">
+                <span class="text-surface-muted">{{ 'invoice.template.due_date' | translate }}</span>
+                <p class="font-medium text-surface-fg">
+                  {{ 'invoices.create.due_in_days' | translate : { days: billing.paymentTermDays } }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Right: live tax invoice preview -->
+        <div class="invoice-create-preview min-w-0 space-y-2">
+          <h4 class="text-sm font-semibold text-surface-fg">{{ 'invoices.create.preview' | translate }}</h4>
+          <div
+            *ngIf="previewInvoice() as draft"
+            class="invoice-create-preview__frame overflow-auto rounded-xl border border-surface-border bg-surface-elevated"
+          >
+            <app-invoice-document [invoice]="draft" [isDraft]="true" [compact]="true" />
+          </div>
+          <div
+            *ngIf="!previewInvoice() && !loadingWorkOrder()"
+            class="invoice-create-preview__frame flex items-center justify-center rounded-xl border border-dashed border-surface-border p-6 text-center text-sm text-surface-muted"
+          >
+            {{ 'invoices.create.preview_hint' | translate }}
+          </div>
+        </div>
       </div>
 
-      <div class="space-y-3 pt-4 border-t">
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500">Subtotal</span>
-          <span class="font-medium text-gray-900">{{ formData.subtotal }} {{ 'common.sar' | translate }}</span>
-        </div>
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500">VAT (15%)</span>
-          <span class="font-medium text-gray-900">{{ formData.tax }} {{ 'common.sar' | translate }}</span>
-        </div>
-        <div class="flex justify-between text-base font-bold pt-2 border-t">
-          <span class="text-gray-900">Total</span>
-          <span class="text-blue-600">{{ formData.total }} {{ 'common.sar' | translate }}</span>
-        </div>
-      </div>
+      <p *ngIf="submitError()" class="text-sm font-medium text-red-600">{{ submitError() }}</p>
 
-      <div class="mt-6 flex justify-end gap-3">
-        <button 
-          type="button" 
-          (click)="isAddModalOpen.set(false)"
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Cancel
+      <div class="flex flex-col-reverse gap-3 border-t border-surface-border pt-4 sm:flex-row sm:justify-end">
+        <button type="button" (click)="closeCreateModal()" class="btn-ghost" [disabled]="submitting()">
+          {{ 'common.cancel' | translate }}
         </button>
-        <button 
+        <button
           type="submit"
-          class="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          class="btn-primary"
+          [disabled]="submitting()"
+          [class.opacity-50]="!canSubmit() && !submitting()"
         >
-          Generate & Save
+          {{ submitting() ? ('common.loading' | translate) : ('invoices.create.confirm_issue' | translate) }}
         </button>
       </div>
     </form>
+  </app-modal>
+
+  <app-modal
+    [isOpen]="!!selectedInvoice()"
+    [title]="'invoice.template.tax_invoice' | translate"
+    size="xl"
+    (onClose)="closeDetails()"
+  >
+    <div *ngIf="selectedInvoice() as inv" class="space-y-4">
+      <app-invoice-document [invoice]="inv" />
+      <div class="flex justify-end gap-3 border-t border-surface-border pt-4">
+        <button type="button" (click)="closeDetails()" class="btn-ghost">{{ 'common.close' | translate }}</button>
+        <button type="button" (click)="downloadInvoice(inv)" class="btn-primary">
+          <lucide-icon [name]="Download" class="h-4 w-4"></lucide-icon>
+          {{ 'invoice.template.print_pdf' | translate }}
+        </button>
+      </div>
+    </div>
   </app-modal>
 </div>

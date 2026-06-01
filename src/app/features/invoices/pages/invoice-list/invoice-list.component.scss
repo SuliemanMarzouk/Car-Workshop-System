@@ -1,0 +1,9 @@
+.invoice-create-preview__frame {
+  max-height: min(42dvh, 420px);
+}
+
+@media (min-width: 1024px) {
+  .invoice-create-preview__frame {
+    max-height: min(52dvh, 480px);
+  }
+}

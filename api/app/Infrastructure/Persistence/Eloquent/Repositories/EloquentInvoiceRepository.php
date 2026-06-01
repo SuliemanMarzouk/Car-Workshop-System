@@ -13,7 +13,7 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {
         return Invoice::query()
-            ->with('workOrder.car')
+            ->with(['workOrder.car', 'workOrder.items'])
             ->latest()
             ->paginate($perPage);
     }
@@ -32,7 +32,7 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
                 'status' => WorkOrderStatus::Completed->value,
             ]);
 
-            return $invoice->load('workOrder.car');
+            return $invoice->load(['workOrder.car', 'workOrder.items']);
         });
     }
 
@@ -40,7 +40,7 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
     {
         $invoice->update($attributes);
 
-        return $invoice->fresh('workOrder.car');
+        return $invoice->fresh(['workOrder.car', 'workOrder.items']);
     }
 
     public function delete(Invoice $invoice): void

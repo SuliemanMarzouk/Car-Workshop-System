@@ -1,0 +1,103 @@
+<article
+  class="invoice-doc"
+  [class.invoice-doc--compact]="compact"
+  [attr.dir]="language.isArabic() ? 'rtl' : 'ltr'"
+>
+  <header class="invoice-doc__header">
+    <div class="invoice-doc__brand">
+      <h1>{{ profile.workshopName }}</h1>
+      <p *ngIf="profile.address">{{ profile.address }}</p>
+      <p *ngIf="profile.city">
+        {{ profile.city }}<span *ngIf="profile.country">, {{ profile.country }}</span>
+      </p>
+      <p *ngIf="profile.phone">{{ 'invoice.template.phone' | translate }}: {{ profile.phone }}</p>
+      <p *ngIf="profile.email">{{ 'invoice.template.email' | translate }}: {{ profile.email }}</p>
+      <p *ngIf="profile.taxNumber">{{ 'invoice.template.vat_number' | translate }}: {{ profile.taxNumber }}</p>
+    </div>
+    <div class="invoice-doc__meta">
+      <span class="invoice-doc__badge">{{ 'invoice.template.tax_invoice' | translate }}</span>
+      <p *ngIf="isDraft" class="invoice-doc__draft">{{ 'invoices.create.draft_badge' | translate }}</p>
+      <p><strong>{{ 'invoice.template.invoice_number' | translate }}:</strong> {{ invoiceNumber }}</p>
+      <p><strong>{{ 'invoice.template.issue_date' | translate }}:</strong> {{ formatDate(invoice.created_at) }}</p>
+      <p><strong>{{ 'invoice.template.due_date' | translate }}:</strong> {{ dueDate(invoice.created_at) }}</p>
+      <p><strong>{{ 'table.work_order' | translate }}:</strong> WO-{{ invoice.work_order_id }}</p>
+    </div>
+  </header>
+
+  <section class="invoice-doc__parties">
+    <div>
+      <h2>{{ 'invoice.template.from' | translate }}</h2>
+      <p class="invoice-doc__party-name">{{ profile.workshopName }}</p>
+      <p *ngIf="profile.taxNumber">{{ 'invoice.template.vat_number' | translate }}: {{ profile.taxNumber }}</p>
+    </div>
+    <div>
+      <h2>{{ 'invoice.template.bill_to' | translate }}</h2>
+      <p class="invoice-doc__party-name">{{ billToName }}</p>
+      <p *ngIf="billToAddress" class="invoice-doc__address">{{ billToAddress }}</p>
+      <p *ngIf="invoice.work_order?.car?.plate_number">
+        {{ 'invoice.template.plate' | translate }}: {{ invoice.work_order?.car?.plate_number }}
+      </p>
+      <p *ngIf="invoice.work_order?.car?.vin">
+        {{ 'invoice.template.vin' | translate }}: {{ invoice.work_order?.car?.vin }}
+      </p>
+      <p *ngIf="invoice.work_order?.car?.car_model">
+        {{ 'invoice.template.vehicle' | translate }}: {{ invoice.work_order?.car?.car_model }}
+        <span *ngIf="invoice.work_order?.car?.color"> · {{ invoice.work_order?.car?.color }}</span>
+      </p>
+    </div>
+  </section>
+
+  <table class="invoice-doc__table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ 'invoice.template.description' | translate }}</th>
+        <th>{{ 'invoice.template.qty' | translate }}</th>
+        <th>{{ 'invoice.template.unit_price' | translate }}</th>
+        <th>{{ 'invoice.template.amount' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of lineItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ formatMoney(item.unitPrice) }}</td>
+        <td>{{ formatMoney(item.amount) }} {{ currency }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="invoice-doc__footer">
+    <div class="invoice-doc__totals">
+      <div class="invoice-doc__total-row">
+        <span>{{ 'invoices.subtotal' | translate }}</span>
+        <span>{{ formatMoney(subtotal) }} {{ currency }}</span>
+      </div>
+      <div *ngIf="discount > 0" class="invoice-doc__total-row invoice-doc__total-row--discount">
+        <span>{{ 'invoice.template.discount' | translate }}</span>
+        <span>−{{ formatMoney(discount) }} {{ currency }}</span>
+      </div>
+      <div *ngIf="discount > 0" class="invoice-doc__total-row">
+        <span>{{ 'invoice.template.taxable_amount' | translate }}</span>
+        <span>{{ formatMoney(taxable) }} {{ currency }}</span>
+      </div>
+      <div class="invoice-doc__total-row">
+        <span>{{ 'invoice.template.vat_line' | translate : { rate: taxRate } }}</span>
+        <span>{{ formatMoney(tax) }} {{ currency }}</span>
+      </div>
+      <div class="invoice-doc__total-row invoice-doc__total-row--grand">
+        <span>{{ 'invoice.template.total_due' | translate }}</span>
+        <span>{{ formatMoney(total) }} {{ currency }}</span>
+      </div>
+    </div>
+    <p *ngIf="invoiceNotes" class="invoice-doc__terms">
+      <strong>{{ 'invoice.template.invoice_notes' | translate }}:</strong> {{ invoiceNotes }}
+    </p>
+    <p class="invoice-doc__terms">
+      <strong>{{ 'invoice.template.payment_terms' | translate }}:</strong>
+      {{ 'invoice.template.payment_terms_text' | translate }}
+    </p>
+    <p class="invoice-doc__thanks">{{ 'invoice.template.thank_you' | translate }}</p>
+  </footer>
+</article>

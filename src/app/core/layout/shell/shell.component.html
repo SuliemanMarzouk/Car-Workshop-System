@@ -1,6 +1,6 @@
 <div class="min-h-screen flex flex-col bg-surface font-sans transition-colors duration-300" [dir]="language.isArabic() ? 'rtl' : 'ltr'">
   <header
-    class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-surface-border px-4 backdrop-blur-xl md:px-6"
+    class="sticky top-0 z-[var(--z-header)] flex h-16 shrink-0 items-center justify-between border-b border-surface-border px-4 backdrop-blur-xl md:px-6"
     style="background: var(--bg-header)"
   >
     <div class="flex items-center gap-3">
@@ -53,10 +53,10 @@
     </div>
   </header>
 
-  <div class="relative flex flex-1 overflow-hidden">
+  <div class="relative flex min-h-0 flex-1">
     <div
       [ngClass]="{
-        'fixed inset-y-0 z-20 w-64 transform border-surface-border bg-surface-card shadow-xl transition-transform duration-300 ease-smooth md:relative md:translate-x-0 md:shadow-none pt-16 md:pt-0 border-r': true,
+        'fixed inset-y-0 z-[var(--z-sidebar)] w-64 transform border-surface-border bg-surface-card shadow-xl transition-transform duration-300 ease-smooth md:relative md:translate-x-0 md:shadow-none pt-16 md:pt-0 border-r': true,
         'right-0': language.isArabic(),
         'left-0': !language.isArabic(),
         'translate-x-0': isSidebarOpen(),
@@ -70,11 +70,11 @@
 
     <div
       *ngIf="isSidebarOpen()"
-      class="fixed inset-0 z-10 bg-black/60 backdrop-blur-sm transition-opacity md:hidden"
+      class="fixed inset-0 z-[var(--z-sidebar-backdrop)] bg-black/60 backdrop-blur-sm transition-opacity md:hidden"
       (click)="closeSidebar()"
     ></div>
 
-    <main class="w-full flex-1 overflow-y-auto p-4 md:p-8">
+    <main class="relative z-0 w-full min-h-0 flex-1 overflow-y-auto p-4 md:p-8">
       <div class="mx-auto max-w-7xl space-y-8 animate-fade-in">
         <router-outlet></router-outlet>
       </div>

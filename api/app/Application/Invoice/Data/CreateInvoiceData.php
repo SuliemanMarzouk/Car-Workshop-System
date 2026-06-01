@@ -6,28 +6,20 @@ readonly class CreateInvoiceData
 {
     public function __construct(
         public int $workOrderId,
-        public float $subtotal,
-        public float $tax,
-        public float $total,
+        public string $billToName,
+        public ?string $billToAddress,
+        public float $discountAmount,
+        public ?string $notes,
     ) {}
 
     public static function fromValidated(array $validated): self
     {
         return new self(
             workOrderId: (int) $validated['work_order_id'],
-            subtotal: (float) $validated['subtotal'],
-            tax: (float) $validated['tax'],
-            total: (float) $validated['total'],
+            billToName: $validated['bill_to_name'],
+            billToAddress: $validated['bill_to_address'] ?? null,
+            discountAmount: (float) ($validated['discount_amount'] ?? 0),
+            notes: $validated['notes'] ?? null,
         );
-    }
-
-    public function toAttributes(): array
-    {
-        return [
-            'work_order_id' => $this->workOrderId,
-            'subtotal' => $this->subtotal,
-            'tax' => $this->tax,
-            'total' => $this->total,
-        ];
     }
 }

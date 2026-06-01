@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, CheckCircle, Eye, Search, XCircle } from 'lucide-angular';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { WorkOrderRepository } from '@features/work-orders/data/work-order.repository';
 import { WorkOrder, WorkOrderStatus } from '@features/work-orders/models/work-order.model';
 
 @Component({
   selector: 'app-pending-approval-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule, ModalComponent],
   templateUrl: './pending-approval-list.component.html',
 })
 export class PendingApprovalListComponent implements OnInit {
@@ -23,6 +24,7 @@ export class PendingApprovalListComponent implements OnInit {
   readonly workOrders = signal<WorkOrder[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
+  readonly selectedOrder = signal<WorkOrder | null>(null);
 
   ngOnInit(): void {
     this.fetchPendingOrders();
@@ -47,9 +49,20 @@ export class PendingApprovalListComponent implements OnInit {
     this.updateStatus(id, 'rejected');
   }
 
+  viewDetails(order: WorkOrder): void {
+    this.selectedOrder.set(order);
+  }
+
+  closeDetails(): void {
+    this.selectedOrder.set(null);
+  }
+
   private updateStatus(id: number, status: WorkOrderStatus): void {
     this.workOrderRepository.update(id, { status }).subscribe({
-      next: () => this.fetchPendingOrders(),
+      next: () => {
+        this.fetchPendingOrders();
+        this.closeDetails();
+      },
     });
   }
 

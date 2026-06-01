@@ -25,8 +25,8 @@ class InvoiceController extends Controller
         return new InvoiceResource($invoice);
     }
 
-    public function show(int $invoice, GetInvoiceAction $action): InvoiceResource
+    public function show(string $invoice, GetInvoiceAction $action): InvoiceResource
     {
-        return new InvoiceResource($action->execute($invoice));
+        return new InvoiceResource($action->execute((int) $invoice));
     }
 }

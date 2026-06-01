@@ -1,0 +1,219 @@
+.invoice-doc {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.invoice-doc__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #fff;
+}
+
+.invoice-doc__brand h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.invoice-doc__brand p {
+  margin: 0 0 0.15rem;
+  font-size: 0.75rem;
+  opacity: 0.92;
+}
+
+.invoice-doc__meta {
+  text-align: end;
+  font-size: 0.75rem;
+}
+
+.invoice-doc__draft {
+  margin: 0.35rem 0 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.invoice-doc__badge {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invoice-doc__parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.invoice-doc__parties h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.invoice-doc__party-name {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.invoice-doc__address {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  color: #475569;
+  white-space: pre-line;
+}
+
+.invoice-doc__total-row--discount span:last-child {
+  color: #b45309;
+}
+
+.invoice-doc__parties p {
+  margin: 0 0 0.2rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.invoice-doc__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-doc__table thead th {
+  padding: 0.6rem 0.75rem;
+  background: #1e293b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: start;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.invoice-doc__table thead th:first-child,
+.invoice-doc__table tbody td:first-child,
+.invoice-doc__table thead th:nth-child(3),
+.invoice-doc__table tbody td:nth-child(3),
+.invoice-doc__table thead th:nth-child(4),
+.invoice-doc__table tbody td:nth-child(4),
+.invoice-doc__table thead th:nth-child(5),
+.invoice-doc__table tbody td:nth-child(5) {
+  text-align: center;
+}
+
+.invoice-doc__table tbody td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.invoice-doc__table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.invoice-doc__footer {
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+.invoice-doc__totals {
+  margin-inline-start: auto;
+  width: min(100%, 280px);
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.invoice-doc__total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.invoice-doc__total-row--grand {
+  border-bottom: none;
+  background: #1e40af;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.invoice-doc__terms,
+.invoice-doc__thanks {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+@media (max-width: 640px) {
+  .invoice-doc__header,
+  .invoice-doc__parties {
+    flex-direction: column;
+    display: flex;
+  }
+
+  .invoice-doc__parties {
+    grid-template-columns: 1fr;
+  }
+}
+
+.invoice-doc--compact {
+  font-size: 0.75rem;
+}
+
+.invoice-doc--compact .invoice-doc__header {
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+}
+
+.invoice-doc--compact .invoice-doc__brand h1 {
+  font-size: 1rem;
+}
+
+.invoice-doc--compact .invoice-doc__brand p,
+.invoice-doc--compact .invoice-doc__meta {
+  font-size: 0.65rem;
+}
+
+.invoice-doc--compact .invoice-doc__parties {
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+}
+
+.invoice-doc--compact .invoice-doc__table thead th,
+.invoice-doc--compact .invoice-doc__table tbody td {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+.invoice-doc--compact .invoice-doc__footer {
+  padding: 0.75rem 1rem;
+}
+
+.invoice-doc--compact .invoice-doc__total-row {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
+}

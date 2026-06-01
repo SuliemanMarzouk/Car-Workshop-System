@@ -20,6 +20,6 @@ class GetInvoiceAction
             throw new NotFoundHttpException(__('Invoice not found.'));
         }
 
-        return $invoice->load('workOrder.car');
+        return $invoice->load(['workOrder.car', 'workOrder.items']);
     }
 }

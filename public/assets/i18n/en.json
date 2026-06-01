@@ -41,7 +41,9 @@
     "reset_password_title": "Reset Password",
     "reset_password_subtitle": "Enter your new password below.",
     "new_password": "New Password",
-    "reset_password_button": "Reset Password"
+    "reset_password_button": "Reset Password",
+    "password_mismatch": "Passwords do not match",
+    "all_rights": "All rights reserved."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -80,6 +82,9 @@
     "approve": "Approve",
     "reject": "Reject",
     "cancel": "Cancel",
+    "loading": "Loading...",
+    "all": "All",
+    "close": "Close",
     "sar": "SAR"
   },
   "table": {
@@ -102,6 +107,7 @@
     "pending": "Pending",
     "approved": "Approved",
     "completed": "Completed",
+    "rejected": "Rejected",
     "in_progress": "In Progress",
     "paid": "Paid",
     "unpaid": "Unpaid",
@@ -110,12 +116,20 @@
   "cars": {
     "title": "Cars",
     "subtitle": "Manage registered vehicles",
-    "no_cars": "No cars found matching your search."
+    "no_cars": "No cars found matching your search.",
+    "model_label": "Model",
+    "color": "Color",
+    "odometer": "Odometer (km)"
   },
   "work_orders": {
     "title": "Work Orders",
     "subtitle": "Manage service requests and repairs",
-    "no_orders": "No work orders found."
+    "no_orders": "No work orders found.",
+    "select_car": "Select a car",
+    "items_title": "Work order items",
+    "add_item": "Add item",
+    "item_description": "Description",
+    "item_price": "Price"
   },
   "pending_approvals": {
     "title": "Pending Approvals",
@@ -125,20 +139,90 @@
   "invoices": {
     "title": "Invoices",
     "subtitle": "Manage billing and payments",
-    "no_invoices": "No invoices found."
+    "no_invoices": "No invoices found.",
+    "select_work_order": "Select an approved work order",
+    "subtotal": "Subtotal",
+    "tax_vat": "VAT (15%)",
+    "total": "Total",
+    "generate_save": "Generate & Save",
+    "create": {
+      "title": "Issue tax invoice",
+      "subtitle": "Select an approved work order, review line items and totals, then confirm issuance.",
+      "issue_invoice": "Issue invoice",
+      "source_work_order": "Source work order",
+      "line_items": "Line items",
+      "preview": "Invoice preview",
+      "preview_hint": "Select a work order to preview the tax invoice before issuing.",
+      "draft_badge": "Draft — not yet issued",
+      "today": "Today (on issue)",
+      "due_in_days": "+{{days}} days from issue",
+      "no_eligible_orders": "No approved work orders without an invoice.",
+      "confirm_issue": "Confirm & issue invoice",
+      "billing_details": "Billing details",
+      "billing_details_hint": "Bill To is the party liable for payment (defaults from vehicle owner). Discount is applied before VAT.",
+      "bill_to_address": "Bill To address (optional)",
+      "bill_to_address_placeholder": "Street, city, postal code…",
+      "discount_hint": "Invoice-level discount in SAR, deducted before VAT (standard tax invoice layout).",
+      "notes_placeholder": "Optional note on the invoice (e.g. payment reference)"
+    }
+  },
+  "invoice": {
+    "template": {
+      "tax_invoice": "Tax Invoice",
+      "invoice_number": "Invoice No.",
+      "issue_date": "Issue Date",
+      "due_date": "Due Date",
+      "from": "From",
+      "bill_to": "Bill To",
+      "phone": "Phone",
+      "email": "Email",
+      "vat_number": "VAT / TRN",
+      "plate": "Plate",
+      "vin": "VIN",
+      "vehicle": "Vehicle",
+      "description": "Description",
+      "qty": "Qty",
+      "unit_price": "Unit Price",
+      "amount": "Amount",
+      "vat_line": "VAT ({{rate}}%)",
+      "total_due": "Total Due",
+      "payment_terms": "Payment Terms",
+      "payment_terms_text": "Payment is due within 15 days of the invoice date.",
+      "thank_you": "Thank you for your business.",
+      "print_pdf": "Print / Save as PDF",
+      "discount": "Discount",
+      "taxable_amount": "Taxable amount",
+      "invoice_notes": "Notes"
+    }
   },
   "users": {
     "title": "Users",
-    "subtitle": "Manage system access and roles"
+    "subtitle": "Manage system access and roles",
+    "role_admin": "Administrator",
+    "only_current": "Showing your account. Team management will be available in a future update."
   },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your application preferences",
     "general": "General Settings",
     "workshop_name": "Workshop Name",
+    "invoice_profile": "Invoice & company details",
+    "invoice_profile_hint": "These details appear on printed tax invoices (seller block).",
+    "address": "Street address",
+    "city": "City",
+    "country": "Country",
+    "phone": "Phone",
+    "email": "Email",
+    "tax_number": "VAT / Tax registration number (TRN)",
     "currency": "Currency",
     "notifications": "Notifications",
     "email_notif": "Email notifications for new work orders",
-    "sms_notif": "SMS notifications for customers"
+    "sms_notif": "SMS notifications for customers",
+    "saved": "Settings saved successfully",
+    "currency_sar": "SAR (Saudi Riyal)",
+    "currency_usd": "USD (US Dollar)"
+  },
+  "details": {
+    "no_items": "No items"
   }
 }

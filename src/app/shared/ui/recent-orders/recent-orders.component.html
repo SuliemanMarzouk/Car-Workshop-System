@@ -18,8 +18,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let order of orders" class="table-row">
-          <td class="px-6 py-4 text-start font-medium text-surface-fg">{{ order.id }}</td>
+        <tr *ngIf="loading()">
+          <td colspan="6" class="px-6 py-8 text-center text-surface-muted">{{ 'common.loading' | translate }}</td>
+        </tr>
+        <tr *ngIf="!loading() && orders().length === 0">
+          <td colspan="6" class="px-6 py-8 text-center text-surface-muted">{{ 'work_orders.no_orders' | translate }}</td>
+        </tr>
+        <tr *ngFor="let order of orders()" class="table-row">
+          <td class="px-6 py-4 text-start font-medium text-surface-fg">WO-{{ order.id }}</td>
           <td class="px-6 py-4 text-start text-surface-muted">{{ order.plate }}</td>
           <td class="px-6 py-4 text-start text-surface-muted">{{ order.owner }}</td>
           <td class="px-6 py-4 text-start">

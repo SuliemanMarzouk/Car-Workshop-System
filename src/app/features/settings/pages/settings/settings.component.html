@@ -1,48 +1,80 @@
-<div class="max-w-2xl space-y-6">
+<div class="app-page max-w-3xl">
   <div>
     <h1 class="page-title">{{ 'settings.title' | translate }}</h1>
-    <p class="page-subtitle mt-1">{{ 'settings.subtitle' | translate }}</p>
+    <p class="page-subtitle">{{ 'settings.subtitle' | translate }}</p>
   </div>
 
-  <div class="app-card p-6 space-y-6">
+  <div class="app-card space-y-6 p-6">
     <div>
-      <h3 class="text-lg font-bold text-gray-900 mb-4">{{ 'settings.general' | translate }}</h3>
+      <h3 class="mb-4 text-lg font-bold text-surface-fg">{{ 'settings.general' | translate }}</h3>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'settings.workshop_name' | translate }}</label>
-          <input 
-            type="text" 
-            value="Car Service Center" 
-            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.workshop_name' | translate }}</label>
+          <input type="text" [(ngModel)]="workshopName" name="workshopName" class="input-field" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'settings.currency' | translate }}</label>
-          <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>SAR (Saudi Riyal)</option>
-            <option>USD (US Dollar)</option>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.currency' | translate }}</label>
+          <select [(ngModel)]="currency" name="currency" class="input-field">
+            <option value="SAR">{{ 'settings.currency_sar' | translate }}</option>
+            <option value="USD">{{ 'settings.currency_usd' | translate }}</option>
           </select>
         </div>
       </div>
     </div>
 
-    <div class="pt-4 border-t border-gray-100">
-      <h3 class="text-lg font-bold text-gray-900 mb-4">{{ 'settings.notifications' | translate }}</h3>
+    <div class="border-t border-surface-border pt-4">
+      <h3 class="mb-4 text-lg font-bold text-surface-fg">{{ 'settings.invoice_profile' | translate }}</h3>
+      <p class="mb-4 text-sm text-surface-muted">{{ 'settings.invoice_profile_hint' | translate }}</p>
+      <div class="space-y-4">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.address' | translate }}</label>
+          <input type="text" [(ngModel)]="address" name="address" class="input-field" />
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.city' | translate }}</label>
+            <input type="text" [(ngModel)]="city" name="city" class="input-field" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.country' | translate }}</label>
+            <input type="text" [(ngModel)]="country" name="country" class="input-field" />
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.phone' | translate }}</label>
+            <input type="tel" [(ngModel)]="phone" name="phone" class="input-field" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.email' | translate }}</label>
+            <input type="email" [(ngModel)]="email" name="email" class="input-field" />
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.tax_number' | translate }}</label>
+          <input type="text" [(ngModel)]="taxNumber" name="taxNumber" class="input-field" placeholder="3xxxxxxxxxx0003" />
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-surface-border pt-4">
+      <h3 class="mb-4 text-lg font-bold text-surface-fg">{{ 'settings.notifications' | translate }}</h3>
       <div class="space-y-3">
         <label class="flex items-center gap-3">
-          <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-          <span class="text-gray-700">{{ 'settings.email_notif' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="emailNotifications" name="emailNotifications" class="rounded border-surface-border text-brand-600" />
+          <span class="text-surface-muted">{{ 'settings.email_notif' | translate }}</span>
         </label>
         <label class="flex items-center gap-3">
-          <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-          <span class="text-gray-700">{{ 'settings.sms_notif' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="smsNotifications" name="smsNotifications" class="rounded border-surface-border text-brand-600" />
+          <span class="text-surface-muted">{{ 'settings.sms_notif' | translate }}</span>
         </label>
       </div>
     </div>
 
-    <div class="pt-6">
-      <button class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-6 rounded-lg font-medium transition-colors">
-        <lucide-icon [name]="Save" class="w-5 h-5"></lucide-icon>
+    <div class="space-y-3 pt-4">
+      <p *ngIf="saved()" class="text-sm font-medium text-emerald-600">{{ 'settings.saved' | translate }}</p>
+      <button type="button" (click)="save()" class="btn-primary">
+        <lucide-icon [name]="Save" class="h-5 w-5"></lucide-icon>
         {{ 'common.save' | translate }}
       </button>
     </div>

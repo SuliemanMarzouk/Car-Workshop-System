@@ -30,21 +30,21 @@ class CarController extends Controller
         return new CarResource($car);
     }
 
-    public function show(int $car, GetCarAction $action): CarResource
+    public function show(string $car, GetCarAction $action): CarResource
     {
-        return new CarResource($action->execute($car));
+        return new CarResource($action->execute((int) $car));
     }
 
-    public function update(UpdateCarRequest $request, int $car, UpdateCarAction $action): CarResource
+    public function update(UpdateCarRequest $request, string $car, UpdateCarAction $action): CarResource
     {
-        $updated = $action->execute($car, UpdateCarData::fromValidated($request->validated()));
+        $updated = $action->execute((int) $car, UpdateCarData::fromValidated($request->validated()));
 
         return new CarResource($updated);
     }
 
-    public function destroy(int $car, DeleteCarAction $action): JsonResponse
+    public function destroy(string $car, DeleteCarAction $action): JsonResponse
     {
-        $action->execute($car);
+        $action->execute((int) $car);
 
         return response()->json(null, 204);
     }

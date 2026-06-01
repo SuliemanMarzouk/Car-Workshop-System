@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AlertCircle, Loader2, Lock, LucideAngularModule, Mail, User } from 'lucide-angular';
 import { AuthService } from '@core/auth/services/auth.service';
 import { AuthLayoutComponent } from '@core/layout/auth-layout/auth-layout.component';
@@ -16,6 +16,7 @@ import { AuthLayoutComponent } from '@core/layout/auth-layout/auth-layout.compon
 export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   readonly Mail = Mail;
   readonly Lock = Lock;
@@ -40,7 +41,7 @@ export class RegisterComponent {
     this.fieldErrors.set({});
 
     if (this.formData.password !== this.formData.password_confirmation) {
-      this.error.set('Passwords do not match');
+      this.error.set(this.translate.instant('auth.password_mismatch'));
       return;
     }
 

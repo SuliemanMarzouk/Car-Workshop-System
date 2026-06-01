@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AlertCircle, CheckCircle, Loader2, Lock, LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '@core/auth/services/auth.service';
 import { AuthLayoutComponent } from '@core/layout/auth-layout/auth-layout.component';
@@ -17,6 +17,7 @@ export class ResetPasswordComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly translate = inject(TranslateService);
 
   readonly Lock = Lock;
   readonly AlertCircle = AlertCircle;
@@ -46,7 +47,7 @@ export class ResetPasswordComponent implements OnInit {
     this.status.set({ type: '', message: '' });
 
     if (this.formData.password !== this.formData.password_confirmation) {
-      this.status.set({ type: 'error', message: 'Passwords do not match' });
+      this.status.set({ type: 'error', message: this.translate.instant('auth.password_mismatch') });
       return;
     }
 

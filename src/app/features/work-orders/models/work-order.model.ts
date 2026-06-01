@@ -16,7 +16,7 @@ export interface WorkOrder {
   created_by?: string | null;
   approved_by?: string | null;
   items?: WorkOrderItem[];
-  invoice?: unknown;
+  invoice?: { id: number } | null;
   created_at?: string;
 }
 

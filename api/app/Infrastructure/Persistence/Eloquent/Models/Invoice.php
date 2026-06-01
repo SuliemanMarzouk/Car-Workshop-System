@@ -12,9 +12,20 @@ class Invoice extends Model
 
     protected $fillable = [
         'work_order_id',
+        'bill_to_name',
+        'bill_to_address',
+        'discount_amount',
         'subtotal',
         'tax',
         'total',
+        'notes',
+    ];
+
+    protected $casts = [
+        'discount_amount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     public function workOrder(): BelongsTo

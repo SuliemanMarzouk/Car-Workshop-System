@@ -35,14 +35,14 @@ class WorkOrderController extends Controller
         return new WorkOrderResource($workOrder);
     }
 
-    public function show(int $work_order, GetWorkOrderAction $action): WorkOrderResource
+    public function show(string $work_order, GetWorkOrderAction $action): WorkOrderResource
     {
-        return new WorkOrderResource($action->execute($work_order));
+        return new WorkOrderResource($action->execute((int) $work_order));
     }
 
     public function update(
         UpdateWorkOrderRequest $request,
-        int $work_order,
+        string $work_order,
         UpdateWorkOrderAction $action,
     ): WorkOrderResource {
         $approvedBy = null;
@@ -53,16 +53,16 @@ class WorkOrderController extends Controller
         }
 
         $updated = $action->execute(
-            $work_order,
+            (int) $work_order,
             UpdateWorkOrderData::fromValidated($request->validated(), $approvedBy),
         );
 
         return new WorkOrderResource($updated);
     }
 
-    public function destroy(int $work_order, DeleteWorkOrderAction $action): JsonResponse
+    public function destroy(string $work_order, DeleteWorkOrderAction $action): JsonResponse
     {
-        $action->execute($work_order);
+        $action->execute((int) $work_order);
 
         return response()->json(null, 204);
     }

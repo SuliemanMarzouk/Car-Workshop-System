@@ -37,7 +37,10 @@
         </thead>
         <tbody>
           <tr *ngIf="loading()">
-            <td colspan="5" class="px-6 py-8 text-center text-surface-muted">Loading...</td>
+            <td colspan="5" class="px-6 py-8 text-center text-surface-muted">{{ 'common.loading' | translate }}</td>
+          </tr>
+          <tr *ngIf="!loading() && filteredCars.length === 0">
+            <td colspan="5" class="px-6 py-8 text-center text-surface-muted">{{ 'cars.no_cars' | translate }}</td>
           </tr>
           <tr *ngFor="let car of filteredCars" class="table-row">
             <td class="px-6 py-4 text-start font-semibold text-surface-fg">{{ car.plate_number }}</td>
@@ -56,6 +59,7 @@
                 </button>
                 <button
                   type="button"
+                  (click)="printQr(car)"
                   class="rounded-lg p-1.5 text-surface-muted transition-all hover:bg-violet-500/10 hover:text-violet-600"
                   [title]="'dashboard.quick_actions.print_qr' | translate"
                 >
@@ -87,8 +91,16 @@
           <p *ngIf="errors()['vin']" class="mt-1 text-xs text-rose-600">{{ errors()['vin'][0] }}</p>
         </div>
         <div>
-          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.car_info' | translate }} (Model)</label>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'cars.model_label' | translate }}</label>
           <input type="text" [(ngModel)]="formData.car_model" name="car_model" class="input-field" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'cars.color' | translate }}</label>
+          <input type="text" [(ngModel)]="formData.color" name="color" class="input-field" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'cars.odometer' | translate }}</label>
+          <input type="number" [(ngModel)]="formData.odometer" name="odometer" class="input-field" />
         </div>
         <div>
           <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.owner_name' | translate }}</label>
@@ -100,5 +112,23 @@
         <button type="submit" class="btn-primary">{{ 'common.save' | translate }}</button>
       </div>
     </form>
+  </app-modal>
+
+  <app-modal
+    [isOpen]="!!selectedCar()"
+    [title]="'common.view_details' | translate"
+    (onClose)="closeDetails()"
+  >
+    <div *ngIf="selectedCar() as car" class="space-y-3 text-sm">
+      <p><span class="font-semibold text-surface-fg">{{ 'table.plate_number' | translate }}:</span> {{ car.plate_number }}</p>
+      <p><span class="font-semibold text-surface-fg">{{ 'table.owner_name' | translate }}:</span> {{ car.owner_name }}</p>
+      <p><span class="font-semibold text-surface-fg">{{ 'cars.model_label' | translate }}:</span> {{ car.car_model }}</p>
+      <p><span class="font-semibold text-surface-fg">{{ 'cars.color' | translate }}:</span> {{ car.color }}</p>
+      <p><span class="font-semibold text-surface-fg">{{ 'cars.odometer' | translate }}:</span> {{ car.odometer }}</p>
+      <p><span class="font-semibold text-surface-fg">{{ 'table.vin' | translate }}:</span> {{ car.vin }}</p>
+      <div class="pt-4">
+        <button type="button" (click)="printQr(car)" class="btn-ghost">{{ 'dashboard.quick_actions.print_qr' | translate }}</button>
+      </div>
+    </div>
   </app-modal>
 </div>

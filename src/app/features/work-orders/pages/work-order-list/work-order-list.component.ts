@@ -29,6 +29,8 @@ export class WorkOrderListComponent implements OnInit {
   readonly cars = signal<Car[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
+  readonly statusFilter = signal<string>('all');
+  readonly showFilter = signal(false);
   readonly isAddModalOpen = signal(false);
   readonly selectedOrder = signal<WorkOrder | null>(null);
   readonly errors = signal<Record<string, string[]>>({});
@@ -85,7 +87,15 @@ export class WorkOrderListComponent implements OnInit {
 
   handleSubmit(): void {
     this.errors.set({});
-    this.workOrderRepository.create(this.formData).subscribe({
+    const payload = {
+      ...this.formData,
+      car_id: Number(this.formData.car_id),
+      items: this.formData.items.map((item) => ({
+        description: item.description,
+        price: item.price === '' || item.price == null ? null : Number(item.price),
+      })),
+    };
+    this.workOrderRepository.create(payload).subscribe({
       next: () => {
         this.isAddModalOpen.set(false);
         this.formData = { car_id: '', items: [{ description: '', price: '' }] };
@@ -101,6 +111,18 @@ export class WorkOrderListComponent implements OnInit {
 
   handleViewDetails(order: WorkOrder): void {
     this.selectedOrder.set(order);
+  }
+
+  closeDetails(): void {
+    this.selectedOrder.set(null);
+  }
+
+  toggleFilterPanel(): void {
+    this.showFilter.update((value) => !value);
+  }
+
+  setStatusFilter(status: string): void {
+    this.statusFilter.set(status);
   }
 
   getStatusBadgeClass(status: string): string {
@@ -120,11 +142,17 @@ export class WorkOrderListComponent implements OnInit {
 
   get filteredOrders(): WorkOrder[] {
     const term = this.searchTerm().toLowerCase();
-    return this.workOrders().filter(
-      (order) =>
+    const status = this.statusFilter();
+
+    return this.workOrders().filter((order) => {
+      const matchesSearch =
         order.id.toString().includes(term) ||
         order.car?.plate_number.toLowerCase().includes(term) ||
-        order.car?.owner_name.toLowerCase().includes(term),
-    );
+        order.car?.owner_name.toLowerCase().includes(term);
+
+      const matchesStatus = status === 'all' || order.status === status;
+
+      return matchesSearch && matchesStatus;
+    });
   }
 }

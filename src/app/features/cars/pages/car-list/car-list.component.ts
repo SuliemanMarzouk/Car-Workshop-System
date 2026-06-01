@@ -68,7 +68,11 @@ export class CarListComponent implements OnInit {
 
   handleSubmit(): void {
     this.errors.set({});
-    this.carRepository.create(this.formData).subscribe({
+    const payload = {
+      ...this.formData,
+      odometer: Number(this.formData.odometer) || 0,
+    };
+    this.carRepository.create(payload).subscribe({
       next: () => {
         this.isAddModalOpen.set(false);
         this.formData = {
@@ -91,6 +95,28 @@ export class CarListComponent implements OnInit {
 
   handleViewDetails(car: Car): void {
     this.selectedCar.set(car);
+  }
+
+  closeDetails(): void {
+    this.selectedCar.set(null);
+  }
+
+  printQr(car: Car): void {
+    const title = car.plate_number;
+    const body = `
+      <html><head><title>${title}</title></head>
+      <body style="font-family:sans-serif;text-align:center;padding:40px">
+        <h1>${car.plate_number}</h1>
+        <p>${car.owner_name}</p>
+        <p>${car.car_model} · ${car.color}</p>
+        <p>VIN: ${car.vin}</p>
+      </body></html>`;
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(body);
+      win.document.close();
+      win.print();
+    }
   }
 
   get filteredCars(): Car[] {

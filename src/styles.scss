@@ -6,6 +6,11 @@
   :root {
     --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
+    --z-header: 20;
+    --z-sidebar-backdrop: 25;
+    --z-sidebar: 30;
+    --z-modal: 100;
+
     --bg-base: #eef2f8;
     --bg-card: #ffffff;
     --bg-elevated: #f8fafc;
@@ -54,6 +59,10 @@
     font-family: var(--font-sans);
     background-image: var(--gradient-mesh);
     background-attachment: fixed;
+  }
+
+  body.modal-scroll-lock {
+    overflow: hidden;
   }
 
   *:focus-visible {

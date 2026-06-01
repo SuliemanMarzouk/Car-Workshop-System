@@ -1,42 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Eye } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { WorkOrderRepository } from '@features/work-orders/data/work-order.repository';
+import { WorkOrder } from '@features/work-orders/models/work-order.model';
+
+interface RecentOrderRow {
+  id: number;
+  plate: string;
+  owner: string;
+  status: string;
+  date: string;
+}
 
 @Component({
   selector: 'app-recent-orders',
   standalone: true,
   imports: [CommonModule, RouterLink, LucideAngularModule, TranslateModule],
   templateUrl: './recent-orders.component.html',
-  styleUrl: './recent-orders.component.css'
 })
-export class RecentOrdersComponent {
-  readonly Eye = Eye;
+export class RecentOrdersComponent implements OnInit {
+  private readonly workOrderRepository = inject(WorkOrderRepository);
 
-  orders = [
-    {
-      id: 'WO-001',
-      plate: 'ABC-123',
-      owner: 'Ahmed Al-Salem',
-      status: 'pending',
-      date: '2025-01-24',
-    },
-    {
-      id: 'WO-002',
-      plate: 'XYZ-789',
-      owner: 'Mohammed Al-Rashid',
-      status: 'approved',
-      date: '2025-01-23',
-    },
-    {
-      id: 'WO-003',
-      plate: 'DEF-456',
-      owner: 'Fatima Al-Zahrani',
-      status: 'completed',
-      date: '2025-01-22',
-    }
-  ];
+  readonly Eye = Eye;
+  readonly orders = signal<RecentOrderRow[]>([]);
+  readonly loading = signal(true);
+
+  ngOnInit(): void {
+    this.workOrderRepository.list(1).subscribe({
+      next: (response) => {
+        const rows = response.data.slice(0, 5).map((order) => this.toRow(order));
+        this.orders.set(rows);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
@@ -52,5 +52,15 @@ export class RecentOrdersComponent {
       default:
         return 'badge-pending';
     }
+  }
+
+  private toRow(order: WorkOrder): RecentOrderRow {
+    return {
+      id: order.id,
+      plate: order.car?.plate_number ?? '—',
+      owner: order.car?.owner_name ?? '—',
+      status: order.status,
+      date: order.created_at ? new Date(order.created_at).toLocaleDateString() : '—',
+    };
   }
 }
