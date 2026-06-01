@@ -75,7 +75,7 @@
         <span>{{ formatMoney(subtotal) }} {{ currency }}</span>
       </div>
       <div *ngIf="discount > 0" class="invoice-doc__total-row invoice-doc__total-row--discount">
-        <span>{{ 'invoice.template.discount' | translate }}</span>
+        <span>{{ discountLabel }}</span>
         <span>−{{ formatMoney(discount) }} {{ currency }}</span>
       </div>
       <div *ngIf="discount > 0" class="invoice-doc__total-row">

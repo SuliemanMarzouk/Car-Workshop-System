@@ -1,0 +1,39 @@
+<app-modal
+  [isOpen]="isOpen()"
+  [title]="'cars.qr.title' | translate"
+  size="md"
+  (onClose)="close()"
+>
+  <div *ngIf="car() as vehicle" class="space-y-5">
+    <p class="text-sm text-surface-muted">
+      {{ 'cars.qr.subtitle' | translate:{ plate: vehicle.plate_number } }}
+    </p>
+
+    <div class="qr-preview-wrap">
+      <p class="mb-1 w-full text-sm font-medium text-surface-fg">{{ 'cars.qr.preview' | translate }}</p>
+      <div class="qr-preview-stage w-full">
+        <p *ngIf="previewLoading()" class="text-sm text-surface-muted">{{ 'common.loading' | translate }}</p>
+        <iframe
+          *ngIf="!previewLoading() && previewUrl()"
+          [src]="previewUrl()"
+          [title]="'cars.qr.preview' | translate"
+          class="qr-preview-frame"
+        ></iframe>
+      </div>
+      <p class="qr-print-tip text-xs text-surface-muted">{{ 'cars.qr.print_tip' | translate }}</p>
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-3 border-t border-surface-border pt-4">
+      <button type="button" class="btn-ghost" (click)="close()">{{ 'common.cancel' | translate }}</button>
+      <button
+        type="button"
+        class="btn-primary inline-flex items-center gap-2"
+        [disabled]="printing() || previewLoading()"
+        (click)="handlePrint()"
+      >
+        <lucide-icon [name]="Printer" class="h-4 w-4"></lucide-icon>
+        {{ printing() ? ('common.loading' | translate) : ('cars.qr.print' | translate) }}
+      </button>
+    </div>
+  </div>
+</app-modal>

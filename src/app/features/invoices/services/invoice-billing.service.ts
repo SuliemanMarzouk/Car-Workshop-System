@@ -1,7 +1,14 @@
-import { inject, Injectable } from '@angular/core';
-import { Invoice, InvoiceBillingForm } from '@features/invoices/models/invoice.model';
+import { Injectable } from '@angular/core';
+import {
+  Invoice,
+  InvoiceBillingForm,
+  InvoiceDiscountType,
+} from '@features/invoices/models/invoice.model';
 import { WorkOrder, WorkOrderItem } from '@features/work-orders/models/work-order.model';
-import { InvoicePrintService } from '@features/invoices/services/invoice-print.service';
+export interface InvoiceDiscountInput {
+  discountType: InvoiceDiscountType;
+  discountValue: number | string;
+}
 
 export interface InvoiceTotals {
   subtotal: number;
@@ -18,8 +25,6 @@ export interface BuildDraftOptions {
 
 @Injectable({ providedIn: 'root' })
 export class InvoiceBillingService {
-  private readonly printService = inject(InvoicePrintService);
-
   readonly vatRate = 0.15;
   readonly paymentTermDays = 15;
 
@@ -42,19 +47,37 @@ export class InvoiceBillingService {
     };
   }
 
-  computeTotals(items: WorkOrderItem[], discountAmount: number | string = 0): InvoiceTotals {
-    const discountInput = parseFloat(String(discountAmount)) || 0;
+  resolveDiscountAmount(subtotal: number, discount: InvoiceDiscountInput): number {
+    const value = parseFloat(String(discount.discountValue)) || 0;
+    if (value <= 0 || subtotal <= 0) {
+      return 0;
+    }
+
+    if (discount.discountType === 'percent') {
+      const percent = Math.min(Math.max(value, 0), 100);
+      return this.round(Math.min((subtotal * percent) / 100, subtotal));
+    }
+
+    return this.round(Math.min(Math.max(value, 0), subtotal));
+  }
+
+  computeTotals(items: WorkOrderItem[], discount: InvoiceDiscountInput | number | string = 0): InvoiceTotals {
+    const discountInput: InvoiceDiscountInput =
+      typeof discount === 'object' && discount !== null && 'discountType' in discount
+        ? discount
+        : { discountType: 'amount', discountValue: discount };
+
     const subtotal = this.round(
       items.reduce((sum, item) => sum + (parseFloat(String(item.price)) || 0), 0),
     );
-    const discount = this.round(Math.min(Math.max(discountInput, 0), subtotal));
-    const taxable = this.round(subtotal - discount);
+    const discountAmount = this.resolveDiscountAmount(subtotal, discountInput);
+    const taxable = this.round(subtotal - discountAmount);
     const tax = this.round(taxable * this.vatRate);
     const total = this.round(taxable + tax);
 
     return {
       subtotal,
-      discount,
+      discount: discountAmount,
       taxable,
       tax,
       total,
@@ -62,15 +85,46 @@ export class InvoiceBillingService {
     };
   }
 
+  formatDiscountLabel(
+    invoice: Pick<Invoice, 'discount_type' | 'discount_value' | 'discount_amount'>,
+    baseLabel: string,
+    lang: 'ar' | 'en' = 'ar',
+  ): string {
+    const type = invoice.discount_type ?? 'amount';
+    const value = parseFloat(String(invoice.discount_value)) || 0;
+    const amount = parseFloat(String(invoice.discount_amount)) || 0;
+
+    if (amount <= 0) {
+      return baseLabel;
+    }
+
+    if (type === 'percent' && value > 0) {
+      const pct = this.formatPercent(value, lang);
+      return lang === 'ar' ? `${baseLabel} (${pct})` : `${baseLabel} (${pct})`;
+    }
+
+    return baseLabel;
+  }
+
+  formatPercent(value: number, lang: 'ar' | 'en'): string {
+    const formatted = value % 1 === 0 ? String(value) : value.toFixed(2);
+    return lang === 'ar' ? `${formatted}%` : `${formatted}%`;
+  }
+
   buildDraftInvoice(workOrder: WorkOrder, options: BuildDraftOptions): Invoice {
     const items = this.normalizeItems(workOrder.items);
-    const totals = this.computeTotals(items, options.billing.discountAmount);
+    const totals = this.computeTotals(items, {
+      discountType: options.billing.discountType,
+      discountValue: options.billing.discountValue,
+    });
 
     return {
       id: 0,
       work_order_id: workOrder.id,
       bill_to_name: options.billing.billToName.trim(),
       bill_to_address: options.billing.billToAddress.trim() || null,
+      discount_type: options.billing.discountType,
+      discount_value: options.billing.discountValue,
       discount_amount: totals.discount,
       subtotal: totals.subtotal.toFixed(2),
       tax: totals.tax.toFixed(2),
@@ -85,7 +139,8 @@ export class InvoiceBillingService {
     return {
       billToName: workOrder?.car?.owner_name?.trim() ?? '',
       billToAddress: '',
-      discountAmount: 0,
+      discountType: 'amount',
+      discountValue: 0,
       notes: '',
     };
   }
@@ -118,7 +173,10 @@ export class InvoiceBillingService {
       return false;
     }
 
-    const totals = this.computeTotals(items, billing?.discountAmount ?? 0);
+    const totals = this.computeTotals(items, {
+      discountType: billing?.discountType ?? 'amount',
+      discountValue: billing?.discountValue ?? 0,
+    });
     return totals.subtotal > 0;
   }
 

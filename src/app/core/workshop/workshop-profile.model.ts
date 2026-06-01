@@ -1,5 +1,7 @@
 export interface WorkshopProfile {
   workshopName: string;
+  /** Base64 data URL (PNG/JPEG/SVG) for print & QR cards */
+  logoDataUrl?: string;
   address: string;
   city: string;
   country: string;

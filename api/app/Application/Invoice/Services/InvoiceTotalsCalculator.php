@@ -2,6 +2,7 @@
 
 namespace App\Application\Invoice\Services;
 
+use App\Domain\Invoice\Enums\InvoiceDiscountType;
 use App\Infrastructure\Persistence\Eloquent\Models\WorkOrder;
 use InvalidArgumentException;
 
@@ -18,8 +19,11 @@ class InvoiceTotalsCalculator
      *     total: float
      * }
      */
-    public function fromWorkOrder(WorkOrder $workOrder, float $discountAmount = 0): array
-    {
+    public function fromWorkOrder(
+        WorkOrder $workOrder,
+        string $discountType = 'amount',
+        float $discountValue = 0,
+    ): array {
         $workOrder->loadMissing('items');
 
         if ($workOrder->items->isEmpty()) {
@@ -31,7 +35,7 @@ class InvoiceTotalsCalculator
             2,
         );
 
-        $discount = round(min(max($discountAmount, 0), $subtotal), 2);
+        $discount = $this->resolveDiscountAmount($subtotal, $discountType, $discountValue);
         $taxable = round($subtotal - $discount, 2);
         $tax = round($taxable * self::VAT_RATE, 2);
         $total = round($taxable + $tax, 2);
@@ -43,5 +47,22 @@ class InvoiceTotalsCalculator
             'tax' => $tax,
             'total' => $total,
         ];
+    }
+
+    public function resolveDiscountAmount(float $subtotal, string $discountType, float $discountValue): float
+    {
+        if ($discountValue <= 0 || $subtotal <= 0) {
+            return 0.0;
+        }
+
+        $type = InvoiceDiscountType::tryFrom($discountType) ?? InvoiceDiscountType::Amount;
+
+        if ($type === InvoiceDiscountType::Percent) {
+            $percent = min(max($discountValue, 0), 100);
+
+            return round(min($subtotal * $percent / 100, $subtotal), 2);
+        }
+
+        return round(min(max($discountValue, 0), $subtotal), 2);
     }
 }

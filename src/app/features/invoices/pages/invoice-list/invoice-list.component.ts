@@ -1,7 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from '@core/i18n/language.service';
 import { LucideAngularModule, Download, Eye, Plus, Search } from 'lucide-angular';
 import { InvoiceRepository } from '@features/invoices/data/invoice.repository';
 import { Invoice, InvoiceBillingForm } from '@features/invoices/models/invoice.model';
@@ -31,6 +32,8 @@ export class InvoiceListComponent implements OnInit {
   private readonly workOrderRepository = inject(WorkOrderRepository);
   private readonly invoicePrint = inject(InvoicePrintService);
   readonly billing = inject(InvoiceBillingService);
+  private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
 
   readonly Search = Search;
   readonly Download = Download;
@@ -138,6 +141,33 @@ export class InvoiceListComponent implements OnInit {
     this.refreshPreview();
   }
 
+  onDiscountTypeChange(): void {
+    if (this.billingForm.discountType === 'percent' && this.billingForm.discountValue > 100) {
+      this.billingForm.discountValue = 100;
+    }
+    this.onBillingChanged();
+  }
+
+  discountInputMax(): number | null {
+    return this.billingForm.discountType === 'percent' ? 100 : null;
+  }
+
+  discountInputStep(): string {
+    return this.billingForm.discountType === 'percent' ? '0.01' : '0.01';
+  }
+
+  discountRowLabel(totals: InvoiceTotals): string {
+    return this.billing.formatDiscountLabel(
+      {
+        discount_type: this.billingForm.discountType,
+        discount_value: this.billingForm.discountValue,
+        discount_amount: totals.discount,
+      },
+      this.translate.instant('invoice.template.discount'),
+      this.language.language(),
+    );
+  }
+
   bumpBillingForm(): void {
     this.billingFormVersion.update((value) => value + 1);
   }
@@ -172,7 +202,10 @@ export class InvoiceListComponent implements OnInit {
       return null;
     }
 
-    return this.billing.computeTotals(items, this.billingForm.discountAmount);
+    return this.billing.computeTotals(items, {
+      discountType: this.billingForm.discountType,
+      discountValue: this.billingForm.discountValue,
+    });
   }
 
   handleSubmit(event: Event): void {
@@ -197,7 +230,8 @@ export class InvoiceListComponent implements OnInit {
       work_order_id: Number(this.workOrderId),
       bill_to_name: this.billingForm.billToName.trim(),
       bill_to_address: this.billingForm.billToAddress.trim() || undefined,
-      discount_amount: Number(this.billingForm.discountAmount) || 0,
+      discount_type: this.billingForm.discountType,
+      discount_value: Number(this.billingForm.discountValue) || 0,
       notes: this.billingForm.notes.trim() || undefined,
     };
 

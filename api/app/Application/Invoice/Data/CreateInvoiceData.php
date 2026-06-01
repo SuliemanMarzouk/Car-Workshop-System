@@ -8,7 +8,8 @@ readonly class CreateInvoiceData
         public int $workOrderId,
         public string $billToName,
         public ?string $billToAddress,
-        public float $discountAmount,
+        public string $discountType,
+        public float $discountValue,
         public ?string $notes,
     ) {}
 
@@ -18,7 +19,8 @@ readonly class CreateInvoiceData
             workOrderId: (int) $validated['work_order_id'],
             billToName: $validated['bill_to_name'],
             billToAddress: $validated['bill_to_address'] ?? null,
-            discountAmount: (float) ($validated['discount_amount'] ?? 0),
+            discountType: $validated['discount_type'] ?? 'amount',
+            discountValue: (float) ($validated['discount_value'] ?? 0),
             notes: $validated['notes'] ?? null,
         );
     }

@@ -43,7 +43,11 @@ class CreateInvoiceAction
         }
 
         try {
-            $totals = $this->totalsCalculator->fromWorkOrder($workOrder, $data->discountAmount);
+            $totals = $this->totalsCalculator->fromWorkOrder(
+                $workOrder,
+                $data->discountType,
+                $data->discountValue,
+            );
         } catch (InvalidArgumentException $exception) {
             throw ValidationException::withMessages([
                 'work_order_id' => [$exception->getMessage()],
@@ -54,6 +58,8 @@ class CreateInvoiceAction
             'work_order_id' => $workOrder->id,
             'bill_to_name' => $data->billToName,
             'bill_to_address' => $data->billToAddress,
+            'discount_type' => $data->discountType,
+            'discount_value' => $data->discountValue,
             'discount_amount' => $totals['discount_amount'],
             'subtotal' => $totals['subtotal'],
             'tax' => $totals['tax'],

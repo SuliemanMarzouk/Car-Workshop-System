@@ -59,7 +59,7 @@
                 </button>
                 <button
                   type="button"
-                  (click)="printQr(car)"
+                  (click)="openQrPrint(car)"
                   class="rounded-lg p-1.5 text-surface-muted transition-all hover:bg-violet-500/10 hover:text-violet-600"
                   [title]="'dashboard.quick_actions.print_qr' | translate"
                 >
@@ -127,8 +127,16 @@
       <p><span class="font-semibold text-surface-fg">{{ 'cars.odometer' | translate }}:</span> {{ car.odometer }}</p>
       <p><span class="font-semibold text-surface-fg">{{ 'table.vin' | translate }}:</span> {{ car.vin }}</p>
       <div class="pt-4">
-        <button type="button" (click)="printQr(car)" class="btn-ghost">{{ 'dashboard.quick_actions.print_qr' | translate }}</button>
+        <button type="button" (click)="openQrPrint(car)" class="btn-primary inline-flex items-center gap-2">
+          {{ 'cars.qr.print' | translate }}
+        </button>
       </div>
     </div>
   </app-modal>
+
+  <app-car-qr-print-modal
+    [isOpen]="!!qrPrintCar()"
+    [car]="qrPrintCar()"
+    (closed)="closeQrPrint()"
+  />
 </div>

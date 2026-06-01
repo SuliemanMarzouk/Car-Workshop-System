@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { LanguageService } from '@core/i18n/language.service';
 import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import { Invoice } from '@features/invoices/models/invoice.model';
+import { InvoiceBillingService } from '@features/invoices/services/invoice-billing.service';
 
 export interface InvoiceLineItem {
   description: string;
@@ -44,6 +45,7 @@ interface InvoicePrintLabels {
 export class InvoicePrintService {
   private readonly profileService = inject(WorkshopProfileService);
   private readonly language = inject(LanguageService);
+  private readonly billing = inject(InvoiceBillingService);
   print(invoice: Invoice): void {
     const html = this.buildPrintDocument(invoice);
     if (!this.printWithIframe(html)) {
@@ -126,6 +128,11 @@ export class InvoicePrintService {
     const car = wo?.car;
     const subtotal = this.toNumber(invoice.subtotal);
     const discount = this.toNumber(invoice.discount_amount ?? 0);
+    const discountLabel = this.billing.formatDiscountLabel(
+      invoice,
+      labels.discount,
+      lang,
+    );
     const taxable = Math.max(subtotal - discount, 0);
     const tax = this.toNumber(invoice.tax);
     const total = this.toNumber(invoice.total);
@@ -339,7 +346,7 @@ export class InvoicePrintService {
     <div class="totals-wrap">
       <div class="totals">
         <div class="row"><span>${labels.subtotal}</span><span>${this.formatMoney(subtotal)} ${currency}</span></div>
-        ${discount > 0 ? `<div class="row"><span>${labels.discount}</span><span>−${this.formatMoney(discount)} ${currency}</span></div>` : ''}
+        ${discount > 0 ? `<div class="row"><span>${this.escapeHtml(discountLabel)}</span><span>−${this.formatMoney(discount)} ${currency}</span></div>` : ''}
         ${discount > 0 ? `<div class="row"><span>${labels.taxableAmount}</span><span>${this.formatMoney(taxable)} ${currency}</span></div>` : ''}
         <div class="row"><span>${labels.vat} (${taxRate}%)</span><span>${this.formatMoney(tax)} ${currency}</span></div>
         <div class="row grand"><span>${labels.totalDue}</span><span>${this.formatMoney(total)} ${currency}</span></div>

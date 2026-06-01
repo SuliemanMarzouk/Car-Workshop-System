@@ -19,6 +19,8 @@ class InvoiceResource extends JsonResource
             'work_order_id' => $this->work_order_id,
             'bill_to_name' => $this->bill_to_name,
             'bill_to_address' => $this->bill_to_address,
+            'discount_type' => $this->discount_type ?? 'amount',
+            'discount_value' => $this->discount_value,
             'discount_amount' => $this->discount_amount,
             'subtotal' => $this->subtotal,
             'tax' => $this->tax,

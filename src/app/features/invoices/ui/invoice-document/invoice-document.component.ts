@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '@core/i18n/language.service';
 import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import { Invoice } from '@features/invoices/models/invoice.model';
@@ -23,6 +23,7 @@ export class InvoiceDocumentComponent {
   private readonly printService = inject(InvoicePrintService);
   private readonly billing = inject(InvoiceBillingService);
   private readonly profileService = inject(WorkshopProfileService);
+  private readonly translate = inject(TranslateService);
   readonly language = inject(LanguageService);
 
   get profile() {
@@ -63,6 +64,14 @@ export class InvoiceDocumentComponent {
 
   get discount(): number {
     return parseFloat(String(this.invoice.discount_amount)) || 0;
+  }
+
+  get discountLabel(): string {
+    return this.billing.formatDiscountLabel(
+      this.invoice,
+      this.translate.instant('invoice.template.discount'),
+      this.language.language(),
+    );
   }
 
   get taxable(): number {

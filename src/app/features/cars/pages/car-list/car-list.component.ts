@@ -1,20 +1,30 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Eye, Plus, QrCode, Search } from 'lucide-angular';
 import { CarRepository } from '@features/cars/data/car.repository';
 import { Car, CreateCarPayload } from '@features/cars/models/car.model';
+import { CarQrPrintModalComponent } from '@features/cars/ui/car-qr-print-modal/car-qr-print-modal.component';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-car-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule, ModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    LucideAngularModule,
+    ModalComponent,
+    CarQrPrintModalComponent,
+  ],
   templateUrl: './car-list.component.html',
 })
 export class CarListComponent implements OnInit {
   private readonly carRepository = inject(CarRepository);
+  private readonly route = inject(ActivatedRoute);
 
   readonly Plus = Plus;
   readonly Search = Search;
@@ -26,6 +36,7 @@ export class CarListComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly isAddModalOpen = signal(false);
   readonly selectedCar = signal<Car | null>(null);
+  readonly qrPrintCar = signal<Car | null>(null);
   readonly errors = signal<Record<string, string[]>>({});
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
@@ -41,6 +52,17 @@ export class CarListComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchCars();
+    this.route.queryParamMap.subscribe((params) => {
+      const vehicleId = params.get('vehicle');
+      if (!vehicleId) {
+        return;
+      }
+      const id = Number(vehicleId);
+      if (!Number.isFinite(id)) {
+        return;
+      }
+      this.openQrWhenCarLoaded(id);
+    });
   }
 
   fetchCars(): void {
@@ -101,22 +123,24 @@ export class CarListComponent implements OnInit {
     this.selectedCar.set(null);
   }
 
-  printQr(car: Car): void {
-    const title = car.plate_number;
-    const body = `
-      <html><head><title>${title}</title></head>
-      <body style="font-family:sans-serif;text-align:center;padding:40px">
-        <h1>${car.plate_number}</h1>
-        <p>${car.owner_name}</p>
-        <p>${car.car_model} · ${car.color}</p>
-        <p>VIN: ${car.vin}</p>
-      </body></html>`;
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.write(body);
-      win.document.close();
-      win.print();
+  openQrPrint(car: Car): void {
+    this.qrPrintCar.set(car);
+  }
+
+  closeQrPrint(): void {
+    this.qrPrintCar.set(null);
+  }
+
+  private openQrWhenCarLoaded(id: number): void {
+    const existing = this.cars().find((c) => c.id === id);
+    if (existing) {
+      this.qrPrintCar.set(existing);
+      return;
     }
+    this.carRepository.getById(id).subscribe({
+      next: (car) => this.qrPrintCar.set(car),
+      error: () => undefined,
+    });
   }
 
   get filteredCars(): Car[] {

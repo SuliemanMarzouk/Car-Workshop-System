@@ -119,7 +119,19 @@
     "no_cars": "No cars found matching your search.",
     "model_label": "Model",
     "color": "Color",
-    "odometer": "Odometer (km)"
+    "odometer": "Odometer (km)",
+    "qr": {
+      "title": "Vehicle QR label",
+      "subtitle": "Laser-ready card for {{plate}}",
+      "card_title": "Maintenance information card",
+      "dimensions": "3 × 4 in — two-thirds QR, one-third workshop & vehicle details.",
+      "company_phone": "Company phone",
+      "scan_hint": "Scan to open this vehicle in the workshop",
+      "preview": "Print preview",
+      "print": "Print label",
+      "print_tip": "Print at 3×4 in, 100% scale, with background graphics enabled.",
+      "laser_note": "Trim along border · QR is high-contrast for laser engraving"
+    }
   },
   "work_orders": {
     "title": "Work Orders",
@@ -162,7 +174,12 @@
       "billing_details_hint": "Bill To is the party liable for payment (defaults from vehicle owner). Discount is applied before VAT.",
       "bill_to_address": "Bill To address (optional)",
       "bill_to_address_placeholder": "Street, city, postal code…",
-      "discount_hint": "Invoice-level discount in SAR, deducted before VAT (standard tax invoice layout).",
+      "discount_type_amount": "Fixed amount (SAR)",
+      "discount_type_percent": "Percentage (%)",
+      "discount_hint_amount": "Enter the discount in SAR — deducted from subtotal before VAT.",
+      "discount_hint_percent": "Enter a rate from 0 to 100 — calculated from subtotal before VAT.",
+      "discount_placeholder_amount": "e.g. 50",
+      "discount_placeholder_percent": "e.g. 10",
       "notes_placeholder": "Optional note on the invoice (e.g. payment reference)"
     }
   },
@@ -206,12 +223,16 @@
     "subtitle": "Manage your application preferences",
     "general": "General Settings",
     "workshop_name": "Workshop Name",
+    "logo": "Workshop logo",
+    "logo_hint": "Shown on QR cards and print materials. PNG, JPG, or SVG (max 500 KB).",
+    "logo_upload": "Upload logo",
+    "logo_remove": "Remove logo",
     "invoice_profile": "Invoice & company details",
     "invoice_profile_hint": "These details appear on printed tax invoices (seller block).",
     "address": "Street address",
     "city": "City",
     "country": "Country",
-    "phone": "Phone",
+    "phone": "Company phone",
     "email": "Email",
     "tax_number": "VAT / Tax registration number (TRN)",
     "currency": "Currency",

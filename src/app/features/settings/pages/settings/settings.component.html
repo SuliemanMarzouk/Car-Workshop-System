@@ -13,6 +13,34 @@
           <input type="text" [(ngModel)]="workshopName" name="workshopName" class="input-field" />
         </div>
         <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.logo' | translate }}</label>
+          <p class="mb-3 text-xs text-surface-muted">{{ 'settings.logo_hint' | translate }}</p>
+          <div class="flex flex-wrap items-center gap-4">
+            <div
+              class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-gradient-to-br from-brand-600 to-brand-500 p-2 shadow-sm"
+            >
+              <img
+                *ngIf="logoPreview; else defaultLogo"
+                [src]="logoPreview"
+                alt=""
+                class="max-h-full max-w-full object-contain"
+              />
+              <ng-template #defaultLogo>
+                <img [src]="defaultLogo" alt="" class="max-h-full max-w-full object-contain" />
+              </ng-template>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <label class="btn-ghost cursor-pointer">
+                {{ 'settings.logo_upload' | translate }}
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" (change)="onLogoSelected($event)" />
+              </label>
+              <button *ngIf="logoPreview" type="button" class="btn-ghost text-rose-600" (click)="removeLogo()">
+                {{ 'settings.logo_remove' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
           <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.currency' | translate }}</label>
           <select [(ngModel)]="currency" name="currency" class="input-field">
             <option value="SAR">{{ 'settings.currency_sar' | translate }}</option>
