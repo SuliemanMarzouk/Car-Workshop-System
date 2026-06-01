@@ -16,11 +16,11 @@
   <div class="app-card overflow-hidden">
     <div class="app-card-header">
       <div class="relative max-w-md">
-        <lucide-icon [name]="Search" class="absolute start-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <lucide-icon [name]="Search" class="absolute start-3 top-1/2 h-5 w-5 -translate-y-1/2 text-surface-subtle"></lucide-icon>
         <input
           type="text"
           [placeholder]="'common.search_placeholder_invoices' | translate"
-          class="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          class="search-field"
           [(ngModel)]="searchTerm"
           (ngModelChange)="searchTerm.set($event)"
         />
@@ -44,22 +44,22 @@
             <td colSpan="6" class="px-6 py-8 text-center text-surface-muted">{{ 'common.loading' | translate }}</td>
           </tr>
           <tr *ngFor="let invoice of filteredInvoices" class="table-row">
-            <td class="px-6 py-4 font-medium text-gray-900 text-start">{{ formatInvoiceNumber(invoice.id) }}</td>
-            <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.plate_number }}</td>
-            <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.owner_name }}</td>
+            <td class="table-cell-strong">{{ formatInvoiceNumber(invoice.id) }}</td>
+            <td class="table-cell">{{ invoice.work_order?.car?.plate_number }}</td>
+            <td class="table-cell">{{ invoice.work_order?.car?.owner_name }}</td>
             <td class="px-6 py-4 text-start">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              <span class="badge-paid">
                 {{ 'status.paid' | translate }}
               </span>
             </td>
-            <td class="px-6 py-4 text-gray-900 font-bold text-start">
+            <td class="table-cell-emphasis">
               {{ billing.formatMoney(+invoice.total) }} {{ 'common.sar' | translate }}
             </td>
             <td class="px-6 py-4 text-start">
               <div class="flex items-center gap-3">
                 <button
                   (click)="handleViewDetails(invoice)"
-                  class="text-gray-400 hover:text-blue-600 transition-colors"
+                  class="icon-btn-muted"
                   [title]="'common.view_details' | translate"
                 >
                   <lucide-icon [name]="Eye" class="w-4 h-4"></lucide-icon>

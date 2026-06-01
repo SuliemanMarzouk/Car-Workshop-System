@@ -59,18 +59,18 @@
           </tr>
           <tr *ngFor="let order of filteredOrders" class="table-row">
             <td class="px-6 py-4 font-medium text-surface-fg text-start">WO-{{ order.id }}</td>
-            <td class="px-6 py-4 text-gray-600 text-start">{{ order.car?.plate_number }}</td>
-            <td class="px-6 py-4 text-gray-600 text-start">{{ order.car?.owner_name }}</td>
+            <td class="table-cell">{{ order.car?.plate_number }}</td>
+            <td class="table-cell">{{ order.car?.owner_name }}</td>
             <td class="px-6 py-4 text-start">
               <span [ngClass]="getStatusBadgeClass(order.status)">
                 {{ 'status.' + order.status | translate }}
               </span>
             </td>
-            <td class="px-6 py-4 text-gray-600 text-start">{{ order.created_at | date }}</td>
+            <td class="table-cell">{{ order.created_at | date }}</td>
             <td class="px-6 py-4 text-start">
               <button 
                 (click)="handleViewDetails(order)"
-                class="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-medium text-sm"
+                class="link-action"
               >
                 <lucide-icon [name]="Eye" class="w-4 h-4"></lucide-icon>
                 {{ 'common.view_details' | translate }}
