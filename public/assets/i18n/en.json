@@ -78,6 +78,7 @@
     "view": "View",
     "download": "Download PDF",
     "save": "Save Changes",
+    "saving": "Saving...",
     "edit": "Edit",
     "delete": "Delete",
     "approve": "Approve",
@@ -305,7 +306,9 @@
     "saved": "Settings saved successfully",
     "currency_sar": "Saudi Riyal",
     "currency_usd": "US Dollar",
-    "currency_default_hint": "Default currency for work order prices and new invoices (USD recommended)."
+    "currency_default_hint": "Default currency for work order prices and new invoices (USD recommended).",
+    "vat_rate": "VAT rate",
+    "vat_rate_hint": "Applied automatically when creating invoices (server-side)."
   },
   "details": {
     "no_items": "No items"

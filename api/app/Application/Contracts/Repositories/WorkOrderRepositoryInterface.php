@@ -11,6 +11,8 @@ interface WorkOrderRepositoryInterface
 
     public function findById(int $id): ?WorkOrder;
 
+    public function findForInvoicing(int $id): ?WorkOrder;
+
     public function create(array $attributes, array $items): WorkOrder;
 
     public function update(WorkOrder $workOrder, array $attributes): WorkOrder;

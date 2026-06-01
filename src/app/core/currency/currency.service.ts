@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import { LanguageService } from '@core/i18n/language.service';
 import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import {
@@ -13,10 +13,10 @@ export class CurrencyService {
   private readonly profileService = inject(WorkshopProfileService);
   private readonly language = inject(LanguageService);
 
-  systemCurrency(): CurrencyCode {
-    const profile = this.profileService.getProfile();
+  readonly systemCurrency = computed((): CurrencyCode => {
+    const profile = this.profileService.profile();
     return isCurrencyCode(profile.currency) ? profile.currency : 'USD';
-  }
+  });
 
   symbol(code: string, lang?: 'ar' | 'en'): string {
     const resolved = isCurrencyCode(code) ? code : 'USD';

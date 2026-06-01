@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
 use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\RoleController;
+use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WorkOrderController;
 use Illuminate\Support\Facades\Route;
@@ -81,5 +82,14 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:invoices.create');
         Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
             ->middleware('permission:invoices.view');
+
+        Route::get('/settings/workshop', [SettingsController::class, 'workshop'])
+            ->middleware('permission:invoices.view,invoices.create,settings.view');
+        Route::get('/settings', [SettingsController::class, 'index'])
+            ->middleware('permission:settings.view');
+        Route::put('/settings', [SettingsController::class, 'update'])
+            ->middleware('permission:settings.update');
+        Route::patch('/settings', [SettingsController::class, 'update'])
+            ->middleware('permission:settings.update');
     });
 });

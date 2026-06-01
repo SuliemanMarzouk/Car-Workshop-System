@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Car extends Model
 {
+    /** @use HasFactory<\Database\Factories\CarFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -22,5 +23,10 @@ class Car extends Model
     public function workOrders(): HasMany
     {
         return $this->hasMany(WorkOrder::class);
+    }
+
+    protected static function newFactory(): \Database\Factories\CarFactory
+    {
+        return \Database\Factories\CarFactory::new();
     }
 }

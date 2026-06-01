@@ -18,6 +18,8 @@ export class SettingsComponent implements OnInit {
 
   readonly Save = Save;
   readonly saved = signal(false);
+  readonly saving = signal(false);
+  readonly error = signal<string | null>(null);
   readonly defaultLogo = getDefaultWorkshopLogoDataUrl();
 
   workshopName = '';
@@ -30,15 +32,19 @@ export class SettingsComponent implements OnInit {
   email = '';
   taxNumber = '';
   currency = 'USD';
+  vatRatePercent = 15;
   emailNotifications = true;
   smsNotifications = false;
 
-  ngOnInit(): void {
-    const profile = this.profileService.getProfile();
-    this.applyProfile(profile);
+  async ngOnInit(): Promise<void> {
+    await this.profileService.loadProfile();
+    this.applyProfile(this.profileService.getProfile());
   }
 
-  save(): void {
+  async save(): Promise<void> {
+    this.saving.set(true);
+    this.error.set(null);
+
     const payload: WorkshopProfile = {
       workshopName: this.workshopName,
       logoDataUrl: this.logoDataUrl || undefined,
@@ -49,12 +55,21 @@ export class SettingsComponent implements OnInit {
       email: this.email,
       taxNumber: this.taxNumber,
       currency: this.currency,
+      vatRate: this.vatRatePercent / 100,
       emailNotifications: this.emailNotifications,
       smsNotifications: this.smsNotifications,
     };
-    this.profileService.saveProfile(payload);
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 3000);
+
+    try {
+      await this.profileService.saveProfile(payload);
+      this.applyProfile(this.profileService.getProfile());
+      this.saved.set(true);
+      setTimeout(() => this.saved.set(false), 3000);
+    } catch {
+      this.error.set('Failed to save settings.');
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   onLogoSelected(event: Event): void {
@@ -97,6 +112,7 @@ export class SettingsComponent implements OnInit {
     this.email = profile.email;
     this.taxNumber = profile.taxNumber;
     this.currency = profile.currency;
+    this.vatRatePercent = Math.round(profile.vatRate * 10000) / 100;
     this.emailNotifications = profile.emailNotifications;
     this.smsNotifications = profile.smsNotifications;
   }

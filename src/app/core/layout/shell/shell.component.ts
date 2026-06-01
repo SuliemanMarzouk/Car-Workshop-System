@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Car, Globe, LogOut, Menu, User, X } from 'lucide-angular';
 import { AuthService } from '@core/auth/services/auth.service';
 import { LanguageService } from '@core/i18n/language.service';
+import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import { SidebarComponent } from '@core/layout/sidebar/sidebar.component';
 import { ThemeToggleComponent } from '@shared/ui/theme-toggle/theme-toggle.component';
 
@@ -23,9 +24,14 @@ import { ThemeToggleComponent } from '@shared/ui/theme-toggle/theme-toggle.compo
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css',
 })
-export class ShellComponent {
+export class ShellComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly workshopProfile = inject(WorkshopProfileService);
   readonly language = inject(LanguageService);
+
+  ngOnInit(): void {
+    void this.workshopProfile.loadProfile();
+  }
 
   readonly Car = Car;
   readonly User = User;

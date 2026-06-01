@@ -138,7 +138,7 @@ export class InvoicePrintService {
     const taxable = Math.max(subtotal - discount, 0);
     const tax = this.toNumber(invoice.tax);
     const total = this.toNumber(invoice.total);
-    const taxRate = taxable > 0 ? Math.round((tax / taxable) * 10000) / 100 : 15;
+    const taxRate = taxable > 0 ? Math.round((tax / taxable) * 10000) / 100 : this.billing.vatRate() * 100;
     const billToName =
       invoice.bill_to_name?.trim() || car?.owner_name?.trim() || '—';
     const billToAddress = invoice.bill_to_address?.trim() || '';

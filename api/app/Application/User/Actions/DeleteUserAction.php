@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\User\Actions;
 
+use App\Application\Contracts\Repositories\UserRepositoryInterface;
 use App\Domain\Authorization\Enums\RoleSlug;
 use App\Infrastructure\Persistence\Eloquent\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class DeleteUserAction
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function execute(int $userId, User $actor): void
     {
         if ($userId === $actor->id) {
@@ -16,21 +23,17 @@ class DeleteUserAction
             ]);
         }
 
-        $user = User::query()->with('role')->findOrFail($userId);
+        $user = $this->users->findByIdOrFail($userId);
+        $user->load('role');
 
         if ($user->role?->slug === RoleSlug::OrganizationAdmin->value) {
-            $adminCount = User::query()
-                ->whereHas('role', fn ($q) => $q->where('slug', RoleSlug::OrganizationAdmin->value))
-                ->count();
-
-            if ($adminCount <= 1) {
+            if ($this->users->countByRoleSlug(RoleSlug::OrganizationAdmin->value) <= 1) {
                 throw ValidationException::withMessages([
                     'user' => [__('users.cannot_delete_last_admin')],
                 ]);
             }
         }
 
-        $user->tokens()->delete();
-        $user->delete();
+        $this->users->delete($user);
     }
 }

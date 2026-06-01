@@ -106,7 +106,7 @@ export class InvoiceDocumentComponent {
   get taxRate(): number {
     return this.taxable > 0
       ? Math.round((this.tax / this.taxable) * 10000) / 100
-      : this.billing.vatRate * 100;
+      : this.billing.vatRate() * 100;
   }
 
   get invoiceNotes(): string | null {

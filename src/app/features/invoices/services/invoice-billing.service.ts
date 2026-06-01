@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import { CurrencyCode } from '@core/currency/currency';
 import { CurrencyService } from '@core/currency/currency.service';
+import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import {
   Invoice,
   InvoiceBillingForm,
@@ -34,8 +35,9 @@ export interface BuildDraftOptions {
 @Injectable({ providedIn: 'root' })
 export class InvoiceBillingService {
   private readonly currencyService = inject(CurrencyService);
+  private readonly profileService = inject(WorkshopProfileService);
 
-  readonly vatRate = 0.15;
+  readonly vatRate = computed(() => this.profileService.profile().vatRate);
   readonly paymentTermDays = 15;
 
   normalizeItems(items: WorkOrderItem[] | Record<string, WorkOrderItem> | null | undefined): WorkOrderItem[] {
@@ -94,13 +96,14 @@ export class InvoiceBillingService {
         : { discountType: 'amount', discountValue: discount };
 
     const rate = Math.max(options.exchangeRate ?? 1, 0.000001);
+    const vatRate = this.vatRate();
 
     const subtotalBase = this.round(
       items.reduce((sum, item) => sum + (parseFloat(String(item.price)) || 0), 0),
     );
     const discountBase = this.resolveDiscountAmount(subtotalBase, discountInput, rate);
     const taxableBase = this.round(subtotalBase - discountBase);
-    const taxBase = this.round(taxableBase * this.vatRate);
+    const taxBase = this.round(taxableBase * vatRate);
     const totalBase = this.round(taxableBase + taxBase);
 
     return {
@@ -109,7 +112,7 @@ export class InvoiceBillingService {
       taxable: this.round(taxableBase * rate),
       tax: this.round(taxBase * rate),
       total: this.round(totalBase * rate),
-      taxRatePercent: this.vatRate * 100,
+      taxRatePercent: this.round(vatRate * 100),
     };
   }
 

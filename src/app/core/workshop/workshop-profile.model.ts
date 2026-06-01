@@ -9,6 +9,7 @@ export interface WorkshopProfile {
   email: string;
   taxNumber: string;
   currency: string;
+  vatRate: number;
   emailNotifications: boolean;
   smsNotifications: boolean;
 }
@@ -22,6 +23,7 @@ export const DEFAULT_WORKSHOP_PROFILE: WorkshopProfile = {
   email: '',
   taxNumber: '',
   currency: 'USD',
+  vatRate: 0.15,
   emailNotifications: true,
   smsNotifications: false,
 };

@@ -24,6 +24,13 @@ class EloquentWorkOrderRepository implements WorkOrderRepositoryInterface
         return WorkOrder::query()->find($id);
     }
 
+    public function findForInvoicing(int $id): ?WorkOrder
+    {
+        return WorkOrder::query()
+            ->with(['items', 'invoice', 'car'])
+            ->find($id);
+    }
+
     /**
      * @param  list<WorkOrderItemData|array<string, mixed>>  $items
      */

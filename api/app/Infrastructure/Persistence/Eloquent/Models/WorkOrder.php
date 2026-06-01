@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WorkOrder extends Model
 {
+    /** @use HasFactory<\Database\Factories\WorkOrderFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -42,5 +43,10 @@ class WorkOrder extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    protected static function newFactory(): \Database\Factories\WorkOrderFactory
+    {
+        return \Database\Factories\WorkOrderFactory::new();
     }
 }

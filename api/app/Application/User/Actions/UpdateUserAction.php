@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\User\Actions;
 
+use App\Application\Contracts\Repositories\UserRepositoryInterface;
 use App\Application\User\Data\UpdateUserData;
 use App\Domain\Authorization\Enums\RoleSlug;
 use App\Infrastructure\Persistence\Eloquent\Models\User;
@@ -10,9 +13,14 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateUserAction
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function execute(int $userId, UpdateUserData $data, User $actor): User
     {
-        $user = User::query()->with('role')->findOrFail($userId);
+        $user = $this->users->findByIdOrFail($userId);
+        $user->load('role');
 
         if ($user->id === $actor->id && $data->roleId !== (int) $user->role_id) {
             throw ValidationException::withMessages([
@@ -36,9 +44,7 @@ class UpdateUserAction
             $payload['password'] = Hash::make($data->password);
         }
 
-        $user->update($payload);
-
-        return $user->fresh(['role']);
+        return $this->users->update($user, $payload);
     }
 
     private function isLastOrganizationAdmin(User $user): bool
@@ -47,8 +53,6 @@ class UpdateUserAction
             return false;
         }
 
-        return User::query()
-            ->whereHas('role', fn ($q) => $q->where('slug', RoleSlug::OrganizationAdmin->value))
-            ->count() <= 1;
+        return $this->users->countByRoleSlug(RoleSlug::OrganizationAdmin->value) <= 1;
     }
 }

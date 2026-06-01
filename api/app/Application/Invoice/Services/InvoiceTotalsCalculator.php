@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Invoice\Services;
 
+use App\Application\Contracts\Repositories\SettingRepositoryInterface;
 use App\Domain\Invoice\Enums\InvoiceDiscountType;
 use App\Infrastructure\Persistence\Eloquent\Models\WorkOrder;
 use InvalidArgumentException;
 
 class InvoiceTotalsCalculator
 {
-    public const VAT_RATE = 0.15;
+    public function __construct(
+        private readonly SettingRepositoryInterface $settings,
+    ) {}
 
     /**
      * @return array{
@@ -32,6 +37,7 @@ class InvoiceTotalsCalculator
         }
 
         $rate = max((float) $exchangeRate, 0.000001);
+        $vatRate = $this->settings->vatRate();
 
         $subtotalBase = round(
             (float) $workOrder->items->sum(fn ($item) => (float) $item->price),
@@ -46,7 +52,7 @@ class InvoiceTotalsCalculator
         );
 
         $taxableBase = round($subtotalBase - $discountBase, 2);
-        $taxBase = round($taxableBase * self::VAT_RATE, 2);
+        $taxBase = round($taxableBase * $vatRate, 2);
         $totalBase = round($taxableBase + $taxBase, 2);
 
         return [
@@ -77,7 +83,6 @@ class InvoiceTotalsCalculator
             return round(min($subtotal * $percent / 100, $subtotal), 2);
         }
 
-        // Fixed discount is entered in invoice currency; convert to base for calculation.
         $discountBase = round($discountValue / $rate, 2);
 
         return round(min(max($discountBase, 0), $subtotal), 2);

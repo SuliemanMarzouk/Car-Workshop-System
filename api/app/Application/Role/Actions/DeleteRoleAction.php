@@ -1,16 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Role\Actions;
 
+use App\Application\Contracts\Repositories\RoleRepositoryInterface;
 use App\Domain\Authorization\Enums\RoleSlug;
-use App\Infrastructure\Persistence\Eloquent\Models\Role;
 use Illuminate\Validation\ValidationException;
 
 class DeleteRoleAction
 {
+    public function __construct(
+        private readonly RoleRepositoryInterface $roles,
+    ) {}
+
     public function execute(int $roleId): void
     {
-        $role = Role::query()->withCount('users')->findOrFail($roleId);
+        $role = $this->roles->findByIdOrFail($roleId);
+        $role->loadCount('users');
 
         if ($role->is_system || $role->slug === RoleSlug::OrganizationAdmin->value) {
             throw ValidationException::withMessages([
@@ -24,7 +31,6 @@ class DeleteRoleAction
             ]);
         }
 
-        $role->permissions()->detach();
-        $role->delete();
+        $this->roles->delete($role);
     }
 }

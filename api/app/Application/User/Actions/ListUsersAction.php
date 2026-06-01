@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\User\Actions;
 
-use App\Infrastructure\Persistence\Eloquent\Models\User;
+use App\Application\Contracts\Repositories\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ListUsersAction
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function execute(int $perPage = 15): LengthAwarePaginator
     {
-        return User::query()
-            ->with('role')
-            ->orderBy('name')
-            ->paginate($perPage);
+        return $this->users->paginate($perPage);
     }
 }
