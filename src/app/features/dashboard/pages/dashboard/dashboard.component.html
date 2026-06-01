@@ -32,7 +32,7 @@
     <app-stat-card
       class="stagger-4 block"
       [title]="'dashboard.stats.total_invoices' | translate"
-      [value]="loading() ? '...' : (('common.sar' | translate) + ' ' + invoicesToday())"
+      [value]="loading() ? '...' : currencyService.formatAmount(+invoicesToday(), currencyService.systemCurrency())"
       [icon]="DollarSign"
       iconColor="text-violet-600 dark:text-violet-400"
       iconBgColor="bg-violet-100 dark:bg-violet-900/40"

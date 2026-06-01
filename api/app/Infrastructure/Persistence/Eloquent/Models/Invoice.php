@@ -21,9 +21,13 @@ class Invoice extends Model
         'tax',
         'total',
         'notes',
+        'currency',
+        'base_currency',
+        'exchange_rate',
     ];
 
     protected $casts = [
+        'exchange_rate' => 'decimal:6',
         'discount_type' => 'string',
         'discount_value' => 'decimal:2',
         'discount_amount' => 'decimal:2',

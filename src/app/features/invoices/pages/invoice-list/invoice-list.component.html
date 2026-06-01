@@ -53,7 +53,7 @@
               </span>
             </td>
             <td class="table-cell-emphasis">
-              {{ billing.formatMoney(+invoice.total) }} {{ 'common.sar' | translate }}
+              {{ formatInvoiceTotal(invoice) }}
             </td>
             <td class="px-6 py-4 text-start">
               <div class="flex items-center gap-3">
@@ -145,6 +145,52 @@
                 ></textarea>
               </div>
 
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoices.create.invoice_currency' | translate }}</label>
+                  <select
+                    [(ngModel)]="billingForm.currency"
+                    name="invoiceCurrency"
+                    (ngModelChange)="onInvoiceCurrencyChange()"
+                    class="input-field"
+                  >
+                    <option *ngFor="let code of currencyOptions" [value]="code">
+                      {{ currencyService.labelKey(code) | translate }} ({{ currencyService.symbol(code) }})
+                    </option>
+                  </select>
+                  <p class="mt-1 text-xs text-surface-muted">{{ 'invoices.create.invoice_currency_hint' | translate }}</p>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoices.create.exchange_rate' | translate }}</label>
+                  <input
+                    type="number"
+                    min="0.000001"
+                    step="0.000001"
+                    [(ngModel)]="billingForm.exchangeRate"
+                    name="exchangeRate"
+                    (ngModelChange)="onExchangeRateInput()"
+                    class="input-field"
+                    [disabled]="exchangeRateLocked()"
+                    [placeholder]="'invoices.create.exchange_rate_placeholder' | translate"
+                  />
+                  <p class="mt-1 text-xs text-surface-muted">
+                    {{
+                      'invoices.create.exchange_rate_hint'
+                        | translate
+                          : {
+                              base: baseCurrency(),
+                              baseSymbol: currencyService.symbol(baseCurrency()),
+                              invoice: billingForm.currency,
+                              invoiceSymbol: invoiceCurrencySymbol(),
+                              rate: billingForm.exchangeRate
+                            }
+                    }}
+                  </p>
+                  <p *ngIf="errors()['exchange_rate']" class="mt-1 text-xs text-red-600">{{ errors()['exchange_rate'][0] }}</p>
+                  <p *ngIf="errors()['currency']" class="mt-1 text-xs text-red-600">{{ errors()['currency'][0] }}</p>
+                </div>
+              </div>
+
               <div>
                 <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'invoice.template.discount' | translate }}</label>
                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -154,7 +200,9 @@
                     (ngModelChange)="onDiscountTypeChange()"
                     class="input-field"
                   >
-                    <option value="amount">{{ 'invoices.create.discount_type_amount' | translate }}</option>
+                    <option value="amount">
+                      {{ 'invoices.create.discount_type_amount' | translate : { symbol: invoiceCurrencySymbol() } }}
+                    </option>
                     <option value="percent">{{ 'invoices.create.discount_type_percent' | translate }}</option>
                   </select>
                   <input
@@ -178,7 +226,7 @@
                     (billingForm.discountType === 'percent'
                       ? 'invoices.create.discount_hint_percent'
                       : 'invoices.create.discount_hint_amount'
-                    ) | translate
+                    ) | translate : { symbol: invoiceCurrencySymbol() }
                   }}
                 </p>
                 <p *ngIf="errors()['discount_value']" class="mt-1 text-xs text-red-600">{{ errors()['discount_value'][0] }}</p>
@@ -222,7 +270,7 @@
                     <td class="px-4 py-2">{{ item.description }}</td>
                     <td class="px-4 py-2 text-center">1</td>
                     <td class="px-4 py-2 text-end font-medium">
-                      {{ billing.formatMoney(+item.price!) }} {{ 'common.sar' | translate }}
+                      {{ formatWithCurrency(lineItemAmount(item.price!)) }}
                     </td>
                   </tr>
                 </tbody>
@@ -233,23 +281,23 @@
               <div class="rounded-xl border border-surface-border p-4 space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-muted">{{ 'invoices.subtotal' | translate }}</span>
-                  <span class="font-medium">{{ billing.formatMoney(totals.subtotal) }} {{ 'common.sar' | translate }}</span>
+                  <span class="font-medium">{{ formatWithCurrency(totals.subtotal) }}</span>
                 </div>
                 <div *ngIf="totals.discount > 0" class="flex justify-between text-sm text-amber-700">
                   <span>{{ discountRowLabel(totals) }}</span>
-                  <span class="font-medium">−{{ billing.formatMoney(totals.discount) }} {{ 'common.sar' | translate }}</span>
+                  <span class="font-medium">−{{ formatWithCurrency(totals.discount) }}</span>
                 </div>
                 <div *ngIf="totals.discount > 0" class="flex justify-between text-sm">
                   <span class="text-surface-muted">{{ 'invoice.template.taxable_amount' | translate }}</span>
-                  <span class="font-medium">{{ billing.formatMoney(totals.taxable) }} {{ 'common.sar' | translate }}</span>
+                  <span class="font-medium">{{ formatWithCurrency(totals.taxable) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-muted">{{ 'invoice.template.vat_line' | translate : { rate: totals.taxRatePercent } }}</span>
-                  <span class="font-medium">{{ billing.formatMoney(totals.tax) }} {{ 'common.sar' | translate }}</span>
+                  <span class="font-medium">{{ formatWithCurrency(totals.tax) }}</span>
                 </div>
                 <div class="flex justify-between border-t border-surface-border pt-2 text-base font-bold">
                   <span>{{ 'invoice.template.total_due' | translate }}</span>
-                  <span class="text-brand-600">{{ billing.formatMoney(totals.total) }} {{ 'common.sar' | translate }}</span>
+                  <span class="text-brand-600">{{ formatWithCurrency(totals.total) }}</span>
                 </div>
               </div>
             </ng-container>

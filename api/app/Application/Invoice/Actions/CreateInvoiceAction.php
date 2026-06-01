@@ -47,6 +47,7 @@ class CreateInvoiceAction
                 $workOrder,
                 $data->discountType,
                 $data->discountValue,
+                $data->exchangeRate,
             );
         } catch (InvalidArgumentException $exception) {
             throw ValidationException::withMessages([
@@ -65,6 +66,9 @@ class CreateInvoiceAction
             'tax' => $totals['tax'],
             'total' => $totals['total'],
             'notes' => $data->notes,
+            'currency' => $data->currency,
+            'base_currency' => $data->baseCurrency,
+            'exchange_rate' => $data->exchangeRate,
         ]);
     }
 }

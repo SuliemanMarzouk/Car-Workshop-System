@@ -1,13 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { CurrencyCode } from '@core/currency/currency';
+import { CurrencyService } from '@core/currency/currency.service';
 import {
   Invoice,
   InvoiceBillingForm,
   InvoiceDiscountType,
 } from '@features/invoices/models/invoice.model';
 import { WorkOrder, WorkOrderItem } from '@features/work-orders/models/work-order.model';
+
 export interface InvoiceDiscountInput {
   discountType: InvoiceDiscountType;
   discountValue: number | string;
+}
+
+export interface InvoiceTotalsOptions {
+  exchangeRate?: number;
 }
 
 export interface InvoiceTotals {
@@ -21,10 +28,13 @@ export interface InvoiceTotals {
 
 export interface BuildDraftOptions {
   billing: InvoiceBillingForm;
+  baseCurrency: CurrencyCode;
 }
 
 @Injectable({ providedIn: 'root' })
 export class InvoiceBillingService {
+  private readonly currencyService = inject(CurrencyService);
+
   readonly vatRate = 0.15;
   readonly paymentTermDays = 15;
 
@@ -47,42 +57,64 @@ export class InvoiceBillingService {
     };
   }
 
-  resolveDiscountAmount(subtotal: number, discount: InvoiceDiscountInput): number {
+  exchangeRateValue(rate: number | string | undefined | null): number {
+    const parsed = parseFloat(String(rate));
+    return parsed > 0 ? parsed : 1;
+  }
+
+  resolveDiscountAmount(
+    subtotalBase: number,
+    discount: InvoiceDiscountInput,
+    exchangeRate = 1,
+  ): number {
     const value = parseFloat(String(discount.discountValue)) || 0;
-    if (value <= 0 || subtotal <= 0) {
+    if (value <= 0 || subtotalBase <= 0) {
       return 0;
     }
 
+    const rate = Math.max(exchangeRate, 0.000001);
+
     if (discount.discountType === 'percent') {
       const percent = Math.min(Math.max(value, 0), 100);
-      return this.round(Math.min((subtotal * percent) / 100, subtotal));
+      return this.round(Math.min((subtotalBase * percent) / 100, subtotalBase));
     }
 
-    return this.round(Math.min(Math.max(value, 0), subtotal));
+    const discountBase = this.round(value / rate);
+    return this.round(Math.min(Math.max(discountBase, 0), subtotalBase));
   }
 
-  computeTotals(items: WorkOrderItem[], discount: InvoiceDiscountInput | number | string = 0): InvoiceTotals {
+  computeTotals(
+    items: WorkOrderItem[],
+    discount: InvoiceDiscountInput | number | string = 0,
+    options: InvoiceTotalsOptions = {},
+  ): InvoiceTotals {
     const discountInput: InvoiceDiscountInput =
       typeof discount === 'object' && discount !== null && 'discountType' in discount
         ? discount
         : { discountType: 'amount', discountValue: discount };
 
-    const subtotal = this.round(
+    const rate = Math.max(options.exchangeRate ?? 1, 0.000001);
+
+    const subtotalBase = this.round(
       items.reduce((sum, item) => sum + (parseFloat(String(item.price)) || 0), 0),
     );
-    const discountAmount = this.resolveDiscountAmount(subtotal, discountInput);
-    const taxable = this.round(subtotal - discountAmount);
-    const tax = this.round(taxable * this.vatRate);
-    const total = this.round(taxable + tax);
+    const discountBase = this.resolveDiscountAmount(subtotalBase, discountInput, rate);
+    const taxableBase = this.round(subtotalBase - discountBase);
+    const taxBase = this.round(taxableBase * this.vatRate);
+    const totalBase = this.round(taxableBase + taxBase);
 
     return {
-      subtotal,
-      discount: discountAmount,
-      taxable,
-      tax,
-      total,
+      subtotal: this.round(subtotalBase * rate),
+      discount: this.round(discountBase * rate),
+      taxable: this.round(taxableBase * rate),
+      tax: this.round(taxBase * rate),
+      total: this.round(totalBase * rate),
       taxRatePercent: this.vatRate * 100,
     };
+  }
+
+  convertBaseAmount(amount: number, exchangeRate: number): number {
+    return this.round(amount * Math.max(exchangeRate, 0.000001));
   }
 
   formatDiscountLabel(
@@ -100,7 +132,7 @@ export class InvoiceBillingService {
 
     if (type === 'percent' && value > 0) {
       const pct = this.formatPercent(value, lang);
-      return lang === 'ar' ? `${baseLabel} (${pct})` : `${baseLabel} (${pct})`;
+      return `${baseLabel} (${pct})`;
     }
 
     return baseLabel;
@@ -108,15 +140,20 @@ export class InvoiceBillingService {
 
   formatPercent(value: number, lang: 'ar' | 'en'): string {
     const formatted = value % 1 === 0 ? String(value) : value.toFixed(2);
-    return lang === 'ar' ? `${formatted}%` : `${formatted}%`;
+    return `${formatted}%`;
   }
 
   buildDraftInvoice(workOrder: WorkOrder, options: BuildDraftOptions): Invoice {
     const items = this.normalizeItems(workOrder.items);
-    const totals = this.computeTotals(items, {
-      discountType: options.billing.discountType,
-      discountValue: options.billing.discountValue,
-    });
+    const rate = this.exchangeRateValue(options.billing.exchangeRate);
+    const totals = this.computeTotals(
+      items,
+      {
+        discountType: options.billing.discountType,
+        discountValue: options.billing.discountValue,
+      },
+      { exchangeRate: rate },
+    );
 
     return {
       id: 0,
@@ -130,18 +167,24 @@ export class InvoiceBillingService {
       tax: totals.tax.toFixed(2),
       total: totals.total.toFixed(2),
       notes: options.billing.notes.trim() || null,
+      currency: options.billing.currency,
+      base_currency: options.baseCurrency,
+      exchange_rate: rate,
       work_order: { ...workOrder, items },
       created_at: new Date().toISOString(),
     };
   }
 
   defaultBillingForm(workOrder: WorkOrder | null): InvoiceBillingForm {
+    const base = this.currencyService.systemCurrency();
     return {
       billToName: workOrder?.car?.owner_name?.trim() ?? '',
       billToAddress: '',
       discountType: 'amount',
       discountValue: 0,
       notes: '',
+      currency: base,
+      exchangeRate: 1,
     };
   }
 
@@ -173,10 +216,15 @@ export class InvoiceBillingService {
       return false;
     }
 
-    const totals = this.computeTotals(items, {
-      discountType: billing?.discountType ?? 'amount',
-      discountValue: billing?.discountValue ?? 0,
-    });
+    const rate = this.exchangeRateValue(billing.exchangeRate);
+    const totals = this.computeTotals(
+      items,
+      {
+        discountType: billing.discountType,
+        discountValue: billing.discountValue,
+      },
+      { exchangeRate: rate },
+    );
     return totals.subtotal > 0;
   }
 

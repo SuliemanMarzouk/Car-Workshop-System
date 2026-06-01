@@ -2,6 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CURRENCY_CODES, CurrencyCode } from '@core/currency/currency';
+import { CurrencyService } from '@core/currency/currency.service';
 import { LanguageService } from '@core/i18n/language.service';
 import { LucideAngularModule, Download, Eye, Plus, Search } from 'lucide-angular';
 import { InvoiceRepository } from '@features/invoices/data/invoice.repository';
@@ -32,8 +34,11 @@ export class InvoiceListComponent implements OnInit {
   private readonly workOrderRepository = inject(WorkOrderRepository);
   private readonly invoicePrint = inject(InvoicePrintService);
   readonly billing = inject(InvoiceBillingService);
+  readonly currencyService = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
+
+  readonly currencyOptions = CURRENCY_CODES;
 
   readonly Search = Search;
   readonly Download = Download;
@@ -187,7 +192,57 @@ export class InvoiceListComponent implements OnInit {
 
     const normalized: WorkOrder = { ...workOrder, items };
     this.previewInvoice.set(
-      this.billing.buildDraftInvoice(normalized, { billing: this.billingForm }),
+      this.billing.buildDraftInvoice(normalized, {
+        billing: this.billingForm,
+        baseCurrency: this.baseCurrency(),
+      }),
+    );
+  }
+
+  baseCurrency(): CurrencyCode {
+    return this.currencyService.systemCurrency();
+  }
+
+  onInvoiceCurrencyChange(): void {
+    this.syncExchangeRateForCurrency();
+    this.onBillingChanged();
+  }
+
+  onExchangeRateInput(): void {
+    if (this.billingForm.exchangeRate <= 0) {
+      this.billingForm.exchangeRate = 1;
+    }
+    this.onBillingChanged();
+  }
+
+  exchangeRateLocked(): boolean {
+    return this.billingForm.currency === this.baseCurrency();
+  }
+
+  formatWithCurrency(value: number, code?: CurrencyCode): string {
+    return this.currencyService.formatAmount(value, code ?? this.billingForm.currency);
+  }
+
+  invoiceCurrencySymbol(code?: CurrencyCode): string {
+    return this.currencyService.symbol(code ?? this.billingForm.currency);
+  }
+
+  lineItemAmount(price: string | number): number {
+    return this.billing.convertBaseAmount(
+      parseFloat(String(price)) || 0,
+      this.billing.exchangeRateValue(this.billingForm.exchangeRate),
+    );
+  }
+
+  private syncExchangeRateForCurrency(): void {
+    if (this.billingForm.currency === this.baseCurrency()) {
+      this.billingForm.exchangeRate = 1;
+      return;
+    }
+
+    this.billingForm.exchangeRate = this.currencyService.suggestedExchangeRate(
+      this.baseCurrency(),
+      this.billingForm.currency,
     );
   }
 
@@ -202,10 +257,14 @@ export class InvoiceListComponent implements OnInit {
       return null;
     }
 
-    return this.billing.computeTotals(items, {
-      discountType: this.billingForm.discountType,
-      discountValue: this.billingForm.discountValue,
-    });
+    return this.billing.computeTotals(
+      items,
+      {
+        discountType: this.billingForm.discountType,
+        discountValue: this.billingForm.discountValue,
+      },
+      { exchangeRate: this.billing.exchangeRateValue(this.billingForm.exchangeRate) },
+    );
   }
 
   handleSubmit(event: Event): void {
@@ -233,6 +292,9 @@ export class InvoiceListComponent implements OnInit {
       discount_type: this.billingForm.discountType,
       discount_value: Number(this.billingForm.discountValue) || 0,
       notes: this.billingForm.notes.trim() || undefined,
+      currency: this.billingForm.currency,
+      base_currency: this.baseCurrency(),
+      exchange_rate: this.billing.exchangeRateValue(this.billingForm.exchangeRate),
     };
 
     this.invoiceRepository.create(payload).subscribe({
@@ -315,6 +377,11 @@ export class InvoiceListComponent implements OnInit {
 
   formatInvoiceNumber(id: number): string {
     return this.billing.formatInvoiceNumber(id);
+  }
+
+  formatInvoiceTotal(invoice: Invoice): string {
+    const code = this.currencyService.resolveInvoiceCurrency(invoice);
+    return this.currencyService.formatAmount(parseFloat(String(invoice.total)) || 0, code);
   }
 
   private workOrderHasInvoice(order: WorkOrder): boolean {

@@ -131,7 +131,9 @@
       <p><strong>WO-{{ order.id }}</strong> · <span [ngClass]="getStatusBadgeClass(order.status)">{{ 'status.' + order.status | translate }}</span></p>
       <p>{{ order.car?.plate_number }} — {{ order.car?.owner_name }}</p>
       <ul class="list-disc ps-5 space-y-1">
-        <li *ngFor="let item of order.items">{{ item.description }} — {{ item.price || 0 }} {{ 'common.sar' | translate }}</li>
+        <li *ngFor="let item of order.items">
+          {{ item.description }} — {{ currencyService.formatAmount(+(item.price || 0), currencyService.systemCurrency()) }}
+        </li>
       </ul>
       <p *ngIf="!order.items?.length">{{ 'details.no_items' | translate }}</p>
     </div>

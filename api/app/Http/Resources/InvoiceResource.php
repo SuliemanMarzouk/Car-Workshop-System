@@ -26,6 +26,9 @@ class InvoiceResource extends JsonResource
             'tax' => $this->tax,
             'total' => $this->total,
             'notes' => $this->notes,
+            'currency' => $this->currency ?? 'USD',
+            'base_currency' => $this->base_currency ?? 'USD',
+            'exchange_rate' => $this->exchange_rate ?? 1,
             'work_order' => new WorkOrderResource($this->whenLoaded('workOrder')),
             'created_at' => $this->created_at,
         ];

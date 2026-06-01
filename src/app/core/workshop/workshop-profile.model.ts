@@ -21,7 +21,7 @@ export const DEFAULT_WORKSHOP_PROFILE: WorkshopProfile = {
   phone: '',
   email: '',
   taxNumber: '',
-  currency: 'SAR',
+  currency: 'USD',
   emailNotifications: true,
   smsNotifications: false,
 };

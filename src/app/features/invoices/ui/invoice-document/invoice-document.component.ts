@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '@core/i18n/language.service';
+import { CurrencyService } from '@core/currency/currency.service';
 import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import { Invoice } from '@features/invoices/models/invoice.model';
 import { InvoicePrintService } from '@features/invoices/services/invoice-print.service';
@@ -23,6 +24,7 @@ export class InvoiceDocumentComponent {
   private readonly printService = inject(InvoicePrintService);
   private readonly billing = inject(InvoiceBillingService);
   private readonly profileService = inject(WorkshopProfileService);
+  readonly currencyService = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
   readonly language = inject(LanguageService);
 
@@ -30,11 +32,12 @@ export class InvoiceDocumentComponent {
     return this.profileService.getProfile();
   }
 
+  get currencyCode() {
+    return this.currencyService.resolveInvoiceCurrency(this.invoice);
+  }
+
   get currency(): string {
-    return this.profileService.currencyLabel(
-      this.profile.currency,
-      this.language.language(),
-    );
+    return this.currencyService.symbol(this.currencyCode);
   }
 
   get lineItems() {
@@ -86,6 +89,20 @@ export class InvoiceDocumentComponent {
     return parseFloat(String(this.invoice.total)) || 0;
   }
 
+  get showExchangeNote(): boolean {
+    const rate = this.billing.exchangeRateValue(this.invoice.exchange_rate);
+    const base = this.invoice.base_currency ?? this.currencyService.systemCurrency();
+    return this.currencyCode !== base || Math.abs(rate - 1) > 0.0001;
+  }
+
+  get exchangeRate(): number {
+    return this.billing.exchangeRateValue(this.invoice.exchange_rate);
+  }
+
+  get baseCurrencyCode(): string {
+    return this.invoice.base_currency ?? this.currencyService.systemCurrency();
+  }
+
   get taxRate(): number {
     return this.taxable > 0
       ? Math.round((this.tax / this.taxable) * 10000) / 100
@@ -98,7 +115,7 @@ export class InvoiceDocumentComponent {
   }
 
   formatMoney(value: number): string {
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return this.currencyService.formatAmount(value, this.currencyCode);
   }
 
   formatDate(value: string | undefined): string {

@@ -1,3 +1,4 @@
+import { CurrencyCode } from '@core/currency/currency';
 import { WorkOrder } from '@features/work-orders/models/work-order.model';
 
 export type InvoiceDiscountType = 'amount' | 'percent';
@@ -14,6 +15,9 @@ export interface Invoice {
   tax: string | number;
   total: string | number;
   notes?: string | null;
+  currency?: CurrencyCode;
+  base_currency?: CurrencyCode;
+  exchange_rate?: string | number;
   work_order?: WorkOrder;
   created_at?: string;
 }
@@ -25,6 +29,9 @@ export interface CreateInvoicePayload {
   discount_type: InvoiceDiscountType;
   discount_value: number;
   notes?: string;
+  currency: CurrencyCode;
+  base_currency: CurrencyCode;
+  exchange_rate: number;
 }
 
 export interface InvoiceBillingForm {
@@ -33,4 +40,6 @@ export interface InvoiceBillingForm {
   discountType: InvoiceDiscountType;
   discountValue: number;
   notes: string;
+  currency: CurrencyCode;
+  exchangeRate: number;
 }

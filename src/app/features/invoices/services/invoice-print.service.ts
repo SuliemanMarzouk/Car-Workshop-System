@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { LanguageService } from '@core/i18n/language.service';
+import { CurrencyService } from '@core/currency/currency.service';
 import { WorkshopProfileService } from '@core/workshop/workshop-profile.service';
 import { Invoice } from '@features/invoices/models/invoice.model';
 import { InvoiceBillingService } from '@features/invoices/services/invoice-billing.service';
@@ -44,6 +45,7 @@ interface InvoicePrintLabels {
 @Injectable({ providedIn: 'root' })
 export class InvoicePrintService {
   private readonly profileService = inject(WorkshopProfileService);
+  private readonly currencyService = inject(CurrencyService);
   private readonly language = inject(LanguageService);
   private readonly billing = inject(InvoiceBillingService);
   print(invoice: Invoice): void {
@@ -118,7 +120,7 @@ export class InvoicePrintService {
     const lang = this.language.language();
     const dir = lang === 'ar' ? 'rtl' : 'ltr';
     const profile = this.profileService.getProfile();
-    const currency = this.profileService.currencyLabel(profile.currency, lang);
+    const currencyCode = this.currencyService.resolveInvoiceCurrency(invoice);
     const labels = this.getLabels(lang);
     const items = this.extractLineItems(invoice);
     const invoiceNumber = this.formatInvoiceNumber(invoice.id);
@@ -149,8 +151,8 @@ export class InvoicePrintService {
           <td class="num">${index + 1}</td>
           <td class="desc">${this.escapeHtml(item.description)}</td>
           <td class="num">${item.quantity}</td>
-          <td class="money">${this.formatMoney(item.unitPrice)}</td>
-          <td class="money">${this.formatMoney(item.amount)}</td>
+          <td class="money">${this.formatMoney(item.unitPrice, currencyCode)}</td>
+          <td class="money">${this.formatMoney(item.amount, currencyCode)}</td>
         </tr>`,
       )
       .join('');
@@ -345,11 +347,11 @@ export class InvoicePrintService {
 
     <div class="totals-wrap">
       <div class="totals">
-        <div class="row"><span>${labels.subtotal}</span><span>${this.formatMoney(subtotal)} ${currency}</span></div>
-        ${discount > 0 ? `<div class="row"><span>${this.escapeHtml(discountLabel)}</span><span>−${this.formatMoney(discount)} ${currency}</span></div>` : ''}
-        ${discount > 0 ? `<div class="row"><span>${labels.taxableAmount}</span><span>${this.formatMoney(taxable)} ${currency}</span></div>` : ''}
-        <div class="row"><span>${labels.vat} (${taxRate}%)</span><span>${this.formatMoney(tax)} ${currency}</span></div>
-        <div class="row grand"><span>${labels.totalDue}</span><span>${this.formatMoney(total)} ${currency}</span></div>
+        <div class="row"><span>${labels.subtotal}</span><span>${this.formatMoney(subtotal, currencyCode)}</span></div>
+        ${discount > 0 ? `<div class="row"><span>${this.escapeHtml(discountLabel)}</span><span>−${this.formatMoney(discount, currencyCode)}</span></div>` : ''}
+        ${discount > 0 ? `<div class="row"><span>${labels.taxableAmount}</span><span>${this.formatMoney(taxable, currencyCode)}</span></div>` : ''}
+        <div class="row"><span>${labels.vat} (${taxRate}%)</span><span>${this.formatMoney(tax, currencyCode)}</span></div>
+        <div class="row grand"><span>${labels.totalDue}</span><span>${this.formatMoney(total, currencyCode)}</span></div>
       </div>
     </div>
 
@@ -366,19 +368,22 @@ export class InvoicePrintService {
   extractLineItems(invoice: Invoice): InvoiceLineItem[] {
     const rawItems = invoice.work_order?.items ?? [];
     const items = Array.isArray(rawItems) ? rawItems : Object.values(rawItems as Record<string, never>);
+    const rate = this.billing.exchangeRateValue(invoice.exchange_rate);
+
     if (items.length === 0) {
+      const subtotal = this.toNumber(invoice.subtotal);
       return [
         {
           description: 'Service charges',
           quantity: 1,
-          unitPrice: this.toNumber(invoice.subtotal),
-          amount: this.toNumber(invoice.subtotal),
+          unitPrice: subtotal,
+          amount: subtotal,
         },
       ];
     }
 
     return items.map((item) => {
-      const unitPrice = parseFloat(String(item.price)) || 0;
+      const unitPrice = this.billing.convertBaseAmount(parseFloat(String(item.price)) || 0, rate);
       return {
         description: item.description,
         quantity: 1,
@@ -481,8 +486,9 @@ export class InvoicePrintService {
     });
   }
 
-  private formatMoney(value: number): string {
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  private formatMoney(value: number, currencyCode?: string): string {
+    const code = currencyCode ?? this.currencyService.systemCurrency();
+    return this.currencyService.formatAmount(value, code);
   }
 
   private toNumber(value: string | number): number {

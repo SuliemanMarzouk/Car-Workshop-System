@@ -14,6 +14,7 @@ import {
   QrCode,
   Receipt,
 } from 'lucide-angular';
+import { CurrencyService } from '@core/currency/currency.service';
 import { DashboardRepository } from '@features/dashboard/data/dashboard.repository';
 import { RecentOrdersComponent } from '@shared/ui/recent-orders/recent-orders.component';
 import { StatCardComponent } from '@shared/ui/stat-card/stat-card.component';
@@ -27,6 +28,7 @@ import { StatCardComponent } from '@shared/ui/stat-card/stat-card.component';
 export class DashboardComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly dashboardRepository = inject(DashboardRepository);
+  readonly currencyService = inject(CurrencyService);
 
   readonly Car = Car;
   readonly Clock = Clock;

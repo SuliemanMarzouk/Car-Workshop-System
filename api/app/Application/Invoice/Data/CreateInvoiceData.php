@@ -11,6 +11,9 @@ readonly class CreateInvoiceData
         public string $discountType,
         public float $discountValue,
         public ?string $notes,
+        public string $currency,
+        public string $baseCurrency,
+        public float $exchangeRate,
     ) {}
 
     public static function fromValidated(array $validated): self
@@ -22,6 +25,9 @@ readonly class CreateInvoiceData
             discountType: $validated['discount_type'] ?? 'amount',
             discountValue: (float) ($validated['discount_value'] ?? 0),
             notes: $validated['notes'] ?? null,
+            currency: $validated['currency'],
+            baseCurrency: $validated['base_currency'],
+            exchangeRate: (float) $validated['exchange_rate'],
         );
     }
 }

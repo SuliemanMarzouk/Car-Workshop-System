@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Invoice;
 
+use App\Domain\Invoice\Enums\InvoiceCurrency;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StoreInvoiceRequest extends FormRequest
@@ -21,6 +23,9 @@ class StoreInvoiceRequest extends FormRequest
             'discount_type' => 'nullable|string|in:amount,percent',
             'discount_value' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string|max:1000',
+            'currency' => ['required', 'string', Rule::in(InvoiceCurrency::values())],
+            'base_currency' => ['required', 'string', Rule::in(InvoiceCurrency::values())],
+            'exchange_rate' => 'required|numeric|min:0.000001|max:999999',
         ];
     }
 
@@ -34,6 +39,17 @@ class StoreInvoiceRequest extends FormRequest
                 $validator->errors()->add(
                     'discount_value',
                     __('Percentage discount cannot exceed 100%.'),
+                );
+            }
+
+            $currency = $this->input('currency');
+            $baseCurrency = $this->input('base_currency');
+            $rate = (float) $this->input('exchange_rate', 1);
+
+            if ($currency === $baseCurrency && abs($rate - 1) > 0.0001) {
+                $validator->errors()->add(
+                    'exchange_rate',
+                    __('Exchange rate must be 1 when invoice currency matches base currency.'),
                 );
             }
         });

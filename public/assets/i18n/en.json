@@ -85,7 +85,8 @@
     "loading": "Loading...",
     "all": "All",
     "close": "Close",
-    "sar": "SAR"
+    "sar": "SAR",
+    "amount_symbol": "{{amount}} {{symbol}}"
   },
   "table": {
     "id": "ID",
@@ -174,9 +175,15 @@
       "billing_details_hint": "Bill To is the party liable for payment (defaults from vehicle owner). Discount is applied before VAT.",
       "bill_to_address": "Bill To address (optional)",
       "bill_to_address_placeholder": "Street, city, postal code…",
-      "discount_type_amount": "Fixed amount (SAR)",
+      "discount_type_amount": "Fixed amount ({{symbol}})",
       "discount_type_percent": "Percentage (%)",
-      "discount_hint_amount": "Enter the discount in SAR — deducted from subtotal before VAT.",
+      "discount_hint_amount": "Enter the discount in {{symbol}} — deducted from subtotal before VAT.",
+      "invoice_currency": "Invoice currency",
+      "invoice_currency_hint": "Locked on the invoice after issuance; changing workshop currency later does not affect issued invoices.",
+      "exchange_rate": "Exchange rate",
+      "exchange_rate_placeholder": "e.g. 3.75",
+      "exchange_rate_hint": "1 {{baseSymbol}} ({{base}}) = {{rate}} {{invoiceSymbol}} ({{invoice}}) — prices on the work order are in {{base}}.",
+      "exchange_rate_locked": "Issued at rate: 1 {{baseSymbol}} ({{base}}) = {{rate}} {{invoiceSymbol}} ({{invoice}}).",
       "discount_hint_percent": "Enter a rate from 0 to 100 — calculated from subtotal before VAT.",
       "discount_placeholder_amount": "e.g. 50",
       "discount_placeholder_percent": "e.g. 10",
@@ -240,8 +247,9 @@
     "email_notif": "Email notifications for new work orders",
     "sms_notif": "SMS notifications for customers",
     "saved": "Settings saved successfully",
-    "currency_sar": "SAR (Saudi Riyal)",
-    "currency_usd": "USD (US Dollar)"
+    "currency_sar": "Saudi Riyal",
+    "currency_usd": "US Dollar",
+    "currency_default_hint": "Default currency for work order prices and new invoices (USD recommended)."
   },
   "details": {
     "no_items": "No items"

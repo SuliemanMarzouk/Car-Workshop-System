@@ -63,7 +63,7 @@
         <td>{{ item.description }}</td>
         <td>{{ item.quantity }}</td>
         <td>{{ formatMoney(item.unitPrice) }}</td>
-        <td>{{ formatMoney(item.amount) }} {{ currency }}</td>
+        <td>{{ formatMoney(item.amount) }}</td>
       </tr>
     </tbody>
   </table>
@@ -72,25 +72,38 @@
     <div class="invoice-doc__totals">
       <div class="invoice-doc__total-row">
         <span>{{ 'invoices.subtotal' | translate }}</span>
-        <span>{{ formatMoney(subtotal) }} {{ currency }}</span>
+        <span>{{ formatMoney(subtotal) }}</span>
       </div>
       <div *ngIf="discount > 0" class="invoice-doc__total-row invoice-doc__total-row--discount">
         <span>{{ discountLabel }}</span>
-        <span>−{{ formatMoney(discount) }} {{ currency }}</span>
+        <span>−{{ formatMoney(discount) }}</span>
       </div>
       <div *ngIf="discount > 0" class="invoice-doc__total-row">
         <span>{{ 'invoice.template.taxable_amount' | translate }}</span>
-        <span>{{ formatMoney(taxable) }} {{ currency }}</span>
+        <span>{{ formatMoney(taxable) }}</span>
       </div>
       <div class="invoice-doc__total-row">
         <span>{{ 'invoice.template.vat_line' | translate : { rate: taxRate } }}</span>
-        <span>{{ formatMoney(tax) }} {{ currency }}</span>
+        <span>{{ formatMoney(tax) }}</span>
       </div>
       <div class="invoice-doc__total-row invoice-doc__total-row--grand">
         <span>{{ 'invoice.template.total_due' | translate }}</span>
-        <span>{{ formatMoney(total) }} {{ currency }}</span>
+        <span>{{ formatMoney(total) }}</span>
       </div>
     </div>
+    <p *ngIf="showExchangeNote" class="invoice-doc__terms invoice-doc__fx-note">
+      {{
+        'invoices.create.exchange_rate_locked'
+          | translate
+            : {
+                base: baseCurrencyCode,
+                baseSymbol: currencyService.symbol(baseCurrencyCode),
+                invoice: currencyCode,
+                invoiceSymbol: currency,
+                rate: exchangeRate
+              }
+      }}
+    </p>
     <p *ngIf="invoiceNotes" class="invoice-doc__terms">
       <strong>{{ 'invoice.template.invoice_notes' | translate }}:</strong> {{ invoiceNotes }}
     </p>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Eye, Filter, Plus, Search, Trash2 } from 'lucide-angular';
+import { CurrencyService } from '@core/currency/currency.service';
 import { CarRepository } from '@features/cars/data/car.repository';
 import { Car } from '@features/cars/models/car.model';
 import { WorkOrderRepository } from '@features/work-orders/data/work-order.repository';
@@ -18,6 +19,7 @@ import { ModalComponent } from '@shared/ui/modal/modal.component';
 export class WorkOrderListComponent implements OnInit {
   private readonly workOrderRepository = inject(WorkOrderRepository);
   private readonly carRepository = inject(CarRepository);
+  readonly currencyService = inject(CurrencyService);
 
   readonly Plus = Plus;
   readonly Search = Search;

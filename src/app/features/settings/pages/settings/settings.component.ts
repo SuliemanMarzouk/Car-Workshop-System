@@ -29,7 +29,7 @@ export class SettingsComponent implements OnInit {
   phone = '';
   email = '';
   taxNumber = '';
-  currency = 'SAR';
+  currency = 'USD';
   emailNotifications = true;
   smsNotifications = false;
 

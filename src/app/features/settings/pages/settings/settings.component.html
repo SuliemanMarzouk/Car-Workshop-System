@@ -43,9 +43,10 @@
         <div>
           <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'settings.currency' | translate }}</label>
           <select [(ngModel)]="currency" name="currency" class="input-field">
-            <option value="SAR">{{ 'settings.currency_sar' | translate }}</option>
-            <option value="USD">{{ 'settings.currency_usd' | translate }}</option>
+            <option value="USD">{{ 'settings.currency_usd' | translate }} ($)</option>
+            <option value="SAR">{{ 'settings.currency_sar' | translate }} (ر.س)</option>
           </select>
+          <p class="mt-1 text-xs text-surface-muted">{{ 'settings.currency_default_hint' | translate }}</p>
         </div>
       </div>
     </div>

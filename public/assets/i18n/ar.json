@@ -85,7 +85,8 @@
     "loading": "جاري التحميل...",
     "all": "الكل",
     "close": "إغلاق",
-    "sar": "ر.س"
+    "sar": "ر.س",
+    "amount_symbol": "{{amount}} {{symbol}}"
   },
   "table": {
     "id": "المعرف",
@@ -174,9 +175,15 @@
       "billing_details_hint": "«فاتورة إلى» هو الطرف الملزم بالدفع (يُملأ افتراضياً من مالك المركبة). يُطبَّق الحسم قبل ضريبة القيمة المضافة.",
       "bill_to_address": "عنوان فاتورة إلى (اختياري)",
       "bill_to_address_placeholder": "الشارع، المدينة، الرمز البريدي…",
-      "discount_type_amount": "مبلغ ثابت",
+      "discount_type_amount": "مبلغ ثابت ({{symbol}})",
       "discount_type_percent": "نسبة مئوية (%)",
-      "discount_hint_amount": "أدخل قيمة الحسم بالريال — يُخصم من المجموع قبل ضريبة القيمة المضافة.",
+      "discount_hint_amount": "أدخل قيمة الحسم بـ {{symbol}} — يُخصم من المجموع قبل ضريبة القيمة المضافة.",
+      "invoice_currency": "عملة الفاتورة",
+      "invoice_currency_hint": "تُثبَّت عند الإصدار؛ تغيير عملة الورشة لاحقاً لا يؤثر على الفواتير الصادرة.",
+      "exchange_rate": "سعر التحويل",
+      "exchange_rate_placeholder": "مثال: 3.75",
+      "exchange_rate_hint": "1 {{baseSymbol}} ({{base}}) = {{rate}} {{invoiceSymbol}} ({{invoice}}) — أسعار أمر العمل بـ {{base}}.",
+      "exchange_rate_locked": "صُدرت بسعر: 1 {{baseSymbol}} ({{base}}) = {{rate}} {{invoiceSymbol}} ({{invoice}}).",
       "discount_hint_percent": "أدخل النسبة من 0 إلى 100 — تُحسب من المجموع قبل الضريبة.",
       "discount_placeholder_amount": "مثال: 50",
       "discount_placeholder_percent": "مثال: 10",
@@ -240,8 +247,9 @@
     "email_notif": "إشعارات البريد الإلكتروني لأوامر العمل الجديدة",
     "sms_notif": "إشعارات الرسائل القصيرة للعملاء",
     "saved": "تم حفظ الإعدادات بنجاح",
-    "currency_sar": "ر.س (ريال سعودي)",
-    "currency_usd": "دولار أمريكي"
+    "currency_sar": "ريال سعودي",
+    "currency_usd": "دولار أمريكي",
+    "currency_default_hint": "العملة الافتراضية لأسعار أوامر العمل والفواتير الجديدة (يُفضّل الدولار)."
   },
   "details": {
     "no_items": "لا توجد بنود"

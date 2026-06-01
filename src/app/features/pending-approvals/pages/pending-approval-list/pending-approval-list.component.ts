@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, CheckCircle, Eye, Search, XCircle } from 'lucide-angular';
+import { CurrencyService } from '@core/currency/currency.service';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { WorkOrderRepository } from '@features/work-orders/data/work-order.repository';
 import { WorkOrder, WorkOrderStatus } from '@features/work-orders/models/work-order.model';
@@ -15,6 +16,7 @@ import { WorkOrder, WorkOrderStatus } from '@features/work-orders/models/work-or
 })
 export class PendingApprovalListComponent implements OnInit {
   private readonly workOrderRepository = inject(WorkOrderRepository);
+  readonly currencyService = inject(CurrencyService);
 
   readonly CheckCircle = CheckCircle;
   readonly XCircle = XCircle;

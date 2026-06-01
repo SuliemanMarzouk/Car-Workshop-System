@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CURRENCIES, isCurrencyCode } from '@core/currency/currency';
 import { DEFAULT_WORKSHOP_PROFILE, WorkshopProfile } from './workshop-profile.model';
 
 const STORAGE_KEY = 'workshop-settings';
@@ -22,13 +23,10 @@ export class WorkshopProfileService {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
   }
 
+  /** @deprecated Use CurrencyService.symbol() */
   currencyLabel(currency: string, lang: 'ar' | 'en'): string {
-    if (currency === 'SAR') {
-      return lang === 'ar' ? 'ر.س' : 'SAR';
-    }
-    if (currency === 'USD') {
-      return lang === 'ar' ? 'د.أ' : 'USD';
-    }
-    return currency;
+    const code = isCurrencyCode(currency) ? currency : 'USD';
+    const meta = CURRENCIES[code];
+    return lang === 'ar' ? meta.symbolAr : meta.symbol;
   }
 }
