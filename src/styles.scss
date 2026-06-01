@@ -4,20 +4,157 @@
 
 @layer base {
   :root {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --bg-base: #eef2f8;
+    --bg-card: #ffffff;
+    --bg-elevated: #f8fafc;
+    --bg-header: rgba(255, 255, 255, 0.85);
+    --border-default: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-muted: #dbeafe;
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+    --shadow-card-hover: 0 4px 6px rgba(15, 23, 42, 0.05), 0 16px 40px rgba(37, 99, 235, 0.12);
+    --shadow-glow: 0 0 0 1px rgba(37, 99, 235, 0.08), 0 8px 32px rgba(37, 99, 235, 0.18);
+    --gradient-brand: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #0ea5e9 100%);
+    --gradient-mesh: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59, 130, 246, 0.25), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(14, 165, 233, 0.15), transparent);
   }
-  
+
+  .dark {
+    --bg-base: #0b1120;
+    --bg-card: #131c31;
+    --bg-elevated: #1a2540;
+    --bg-header: rgba(19, 28, 49, 0.9);
+    --border-default: #2a3a5c;
+    --text-primary: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-muted: rgba(59, 130, 246, 0.15);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(59, 130, 246, 0.15);
+    --shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 8px 40px rgba(59, 130, 246, 0.25);
+    --gradient-brand: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0891b2 100%);
+    --gradient-mesh: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59, 130, 246, 0.35), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(8, 145, 178, 0.2), transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    background-color: #f9fafb;
-    color: #111827;
+    @apply bg-surface text-surface-fg antialiased transition-colors duration-300;
     font-family: var(--font-sans);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-surface;
   }
 }
 
-/* Custom Animations */
+@layer components {
+  .app-page {
+    @apply space-y-6 animate-fade-in;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-surface-fg;
+  }
+
+  .page-subtitle {
+    @apply mt-1 text-surface-muted;
+  }
+
+  .app-card {
+    @apply overflow-hidden rounded-2xl border border-surface-border bg-surface-card shadow-card transition-all duration-300 ease-smooth hover:shadow-card-hover;
+  }
+
+  .app-card-header {
+    @apply border-b border-surface-border bg-surface-elevated p-4 backdrop-blur-sm;
+    background-color: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 ease-smooth hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-glow active:translate-y-0 active:scale-[0.98];
+  }
+
+  .btn-success {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-500 active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-rose-500 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-surface-border bg-surface-card px-3 py-2 text-sm font-medium text-surface-fg transition-all duration-200 hover:border-brand-400 hover:bg-accent-muted hover:text-brand-700 dark:hover:text-brand-300;
+  }
+
+  .toolbar-btn {
+    @apply inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface-card px-3 py-2 text-sm font-medium text-surface-muted shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-400 hover:text-brand-600 hover:shadow-md dark:hover:text-brand-400;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-surface-border bg-surface-card px-4 py-2.5 text-surface-fg shadow-sm transition-all duration-200 placeholder:text-surface-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-500/25;
+  }
+
+  .table-head {
+    @apply bg-surface-elevated text-xs font-semibold uppercase tracking-wider text-surface-muted;
+  }
+
+  .table-row {
+    @apply border-t border-surface-border transition-colors duration-150;
+
+    &:hover {
+      background-color: var(--accent-muted);
+    }
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-surface-muted transition-all duration-200 hover:bg-accent-muted hover:text-brand-700 dark:hover:text-brand-300;
+  }
+
+  .nav-link-active {
+    @apply bg-accent-muted font-semibold text-brand-700 shadow-sm dark:text-brand-300;
+  }
+
+  .stat-card {
+    @apply app-card flex items-center justify-between p-6 animate-slide-up;
+  }
+
+  .badge-pending {
+    @apply rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300;
+  }
+
+  .badge-approved {
+    @apply rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-semibold text-sky-800 dark:bg-sky-900/40 dark:text-sky-300;
+  }
+
+  .badge-rejected {
+    @apply rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-800 dark:bg-rose-900/40 dark:text-rose-300;
+  }
+
+  .badge-completed {
+    @apply rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300;
+  }
+}
+
 @keyframes road-move {
-  from { background-position: 0 0; }
-  to { background-position: 40px 0; }
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 40px 0;
+  }
 }
 
 .animate-road {
@@ -25,29 +162,49 @@
     90deg,
     transparent,
     transparent 20px,
-    rgba(255, 255, 255, 0.5) 20px,
-    rgba(255, 255, 255, 0.5) 40px
+    rgba(255, 255, 255, 0.45) 20px,
+    rgba(255, 255, 255, 0.45) 40px
   );
   background-size: 40px 100%;
   animation: road-move 1s linear infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+  animation: float 3.5s ease-in-out infinite;
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
+  animation: spin-slow 12s linear infinite;
 }
 
-/* You can add global styles to this file, and also import other style files */
+.stagger-1 {
+  animation-delay: 0.05s;
+}
+.stagger-2 {
+  animation-delay: 0.1s;
+}
+.stagger-3 {
+  animation-delay: 0.15s;
+}
+.stagger-4 {
+  animation-delay: 0.2s;
+}

@@ -2,6 +2,12 @@
   "app_title": "Car Service Management System",
   "logout": "Logout",
   "admin": "Admin",
+  "theme": {
+    "dark": "Dark",
+    "light": "Light",
+    "switch_dark": "Switch to dark mode",
+    "switch_light": "Switch to light mode"
+  },
   "sidebar": {
     "dashboard": "Dashboard",
     "cars": "Cars",
@@ -73,6 +79,7 @@
     "delete": "Delete",
     "approve": "Approve",
     "reject": "Reject",
+    "cancel": "Cancel",
     "sar": "SAR"
   },
   "table": {

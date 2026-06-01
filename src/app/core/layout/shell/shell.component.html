@@ -1,0 +1,83 @@
+<div class="min-h-screen flex flex-col bg-surface font-sans transition-colors duration-300" [dir]="language.isArabic() ? 'rtl' : 'ltr'">
+  <header
+    class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-surface-border px-4 backdrop-blur-xl md:px-6"
+    style="background: var(--bg-header)"
+  >
+    <div class="flex items-center gap-3">
+      <button type="button" class="toolbar-btn md:hidden !p-2" (click)="toggleSidebar()">
+        <lucide-icon [name]="isSidebarOpen() ? X : Menu" class="h-6 w-6"></lucide-icon>
+      </button>
+
+      <div class="flex items-center gap-3 rounded-xl bg-accent-muted p-2 shadow-sm transition-transform duration-300 hover:scale-105">
+        <lucide-icon [name]="Car" class="h-6 w-6 text-brand-600 dark:text-brand-400"></lucide-icon>
+      </div>
+      <a routerLink="/" class="hidden text-xl font-bold tracking-tight text-surface-fg sm:block">
+        {{ 'app_title' | translate }}
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 md:gap-4">
+      <div class="flex items-center gap-2">
+        <app-theme-toggle></app-theme-toggle>
+        <button type="button" (click)="toggleLanguage()" class="toolbar-btn">
+          <lucide-icon [name]="Globe" class="h-4 w-4"></lucide-icon>
+          <span class="hidden sm:inline">{{ language.language() === 'en' ? 'العربية' : 'English' }}</span>
+        </button>
+      </div>
+
+      <div
+        class="flex items-center gap-3 border-surface-border"
+        [ngClass]="{
+          'border-r pr-2 md:pr-4': language.isArabic(),
+          'border-l pl-2 md:pl-4': !language.isArabic()
+        }"
+      >
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-accent-muted ring-2 ring-brand-500/20 md:h-10 md:w-10">
+            <lucide-icon [name]="User" class="h-5 w-5 text-brand-600 dark:text-brand-400"></lucide-icon>
+          </div>
+          <div class="hidden text-start md:block">
+            <p class="text-sm font-bold text-surface-fg">{{ user()?.name || 'User' }}</p>
+            <p class="text-xs text-surface-muted">{{ 'admin' | translate }}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="logout()"
+          class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-surface-muted transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
+        >
+          <lucide-icon [name]="LogOut" class="h-5 w-5"></lucide-icon>
+          <span class="hidden text-sm font-medium md:inline">{{ 'logout' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="relative flex flex-1 overflow-hidden">
+    <div
+      [ngClass]="{
+        'fixed inset-y-0 z-20 w-64 transform border-surface-border bg-surface-card shadow-xl transition-transform duration-300 ease-smooth md:relative md:translate-x-0 md:shadow-none pt-16 md:pt-0 border-r': true,
+        'right-0': language.isArabic(),
+        'left-0': !language.isArabic(),
+        'translate-x-0': isSidebarOpen(),
+        'translate-x-full': !isSidebarOpen() && language.isArabic(),
+        '-translate-x-full': !isSidebarOpen() && !language.isArabic()
+      }"
+      class="md:flex md:flex-col"
+    >
+      <app-sidebar (onClose)="closeSidebar()"></app-sidebar>
+    </div>
+
+    <div
+      *ngIf="isSidebarOpen()"
+      class="fixed inset-0 z-10 bg-black/60 backdrop-blur-sm transition-opacity md:hidden"
+      (click)="closeSidebar()"
+    ></div>
+
+    <main class="w-full flex-1 overflow-y-auto p-4 md:p-8">
+      <div class="mx-auto max-w-7xl space-y-8 animate-fade-in">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

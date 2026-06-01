@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "A Car Workshop Management System",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

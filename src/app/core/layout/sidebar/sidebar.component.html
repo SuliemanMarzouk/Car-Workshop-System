@@ -1,0 +1,20 @@
+<aside class="flex h-full w-full flex-col bg-surface-card py-6">
+  <nav class="flex-1 space-y-1 px-3">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.path"
+      [routerLinkActive]="'nav-link-active'"
+      [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+      (click)="close()"
+      class="nav-link"
+      #rla="routerLinkActive"
+    >
+      <lucide-icon
+        [name]="item.icon"
+        class="h-5 w-5 transition-colors"
+        [ngClass]="rla.isActive ? 'text-brand-600 dark:text-brand-400' : 'text-surface-muted'"
+      ></lucide-icon>
+      {{ item.label | translate }}
+    </a>
+  </nav>
+</aside>

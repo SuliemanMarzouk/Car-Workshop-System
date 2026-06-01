@@ -1,0 +1,104 @@
+<div class="app-page">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center animate-slide-up">
+    <div>
+      <h1 class="page-title">{{ 'cars.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'cars.subtitle' | translate }}</p>
+    </div>
+    <button type="button" (click)="isAddModalOpen.set(true)" class="btn-primary w-full sm:w-auto">
+      <lucide-icon [name]="Plus" class="h-5 w-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.add_car' | translate }}
+    </button>
+  </div>
+
+  <div class="app-card animate-slide-up" style="animation-delay: 0.05s">
+    <div class="app-card-header">
+      <div class="relative max-w-md">
+        <lucide-icon [name]="Search" class="absolute start-3 top-1/2 h-5 w-5 -translate-y-1/2 text-surface-subtle"></lucide-icon>
+        <input
+          type="text"
+          class="input-field ps-10"
+          [placeholder]="'common.search_placeholder_cars' | translate"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-start text-sm">
+        <thead class="table-head">
+          <tr>
+            <th class="px-6 py-3 text-start">{{ 'table.plate_number' | translate }}</th>
+            <th class="px-6 py-3 text-start">{{ 'table.owner_name' | translate }}</th>
+            <th class="px-6 py-3 text-start">{{ 'table.car_info' | translate }}</th>
+            <th class="px-6 py-3 text-start">{{ 'table.vin' | translate }}</th>
+            <th class="px-6 py-3 text-start">{{ 'common.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading()">
+            <td colspan="5" class="px-6 py-8 text-center text-surface-muted">Loading...</td>
+          </tr>
+          <tr *ngFor="let car of filteredCars" class="table-row">
+            <td class="px-6 py-4 text-start font-semibold text-surface-fg">{{ car.plate_number }}</td>
+            <td class="px-6 py-4 text-start text-surface-muted">{{ car.owner_name }}</td>
+            <td class="px-6 py-4 text-start text-surface-muted">{{ car.car_model }} - {{ car.color }}</td>
+            <td class="px-6 py-4 font-mono text-xs text-start text-surface-muted">{{ car.vin }}</td>
+            <td class="px-6 py-4 text-start">
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  (click)="handleViewDetails(car)"
+                  class="rounded-lg p-1.5 text-surface-muted transition-all hover:bg-accent-muted hover:text-brand-600"
+                  [title]="'common.view_details' | translate"
+                >
+                  <lucide-icon [name]="Eye" class="h-4 w-4"></lucide-icon>
+                </button>
+                <button
+                  type="button"
+                  class="rounded-lg p-1.5 text-surface-muted transition-all hover:bg-violet-500/10 hover:text-violet-600"
+                  [title]="'dashboard.quick_actions.print_qr' | translate"
+                >
+                  <lucide-icon [name]="QrCode" class="h-4 w-4"></lucide-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <app-modal
+    [isOpen]="isAddModalOpen()"
+    [title]="'dashboard.quick_actions.add_car' | translate"
+    (onClose)="isAddModalOpen.set(false)"
+  >
+    <form (ngSubmit)="handleSubmit()" class="space-y-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.plate_number' | translate }}</label>
+          <input type="text" [(ngModel)]="formData.plate_number" name="plate_number" class="input-field" />
+          <p *ngIf="errors()['plate_number']" class="mt-1 text-xs text-rose-600">{{ errors()['plate_number'][0] }}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.vin' | translate }}</label>
+          <input type="text" [(ngModel)]="formData.vin" name="vin" class="input-field" />
+          <p *ngIf="errors()['vin']" class="mt-1 text-xs text-rose-600">{{ errors()['vin'][0] }}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.car_info' | translate }} (Model)</label>
+          <input type="text" [(ngModel)]="formData.car_model" name="car_model" class="input-field" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-surface-fg">{{ 'table.owner_name' | translate }}</label>
+          <input type="text" [(ngModel)]="formData.owner_name" name="owner_name" class="input-field" />
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" (click)="isAddModalOpen.set(false)" class="btn-ghost">{{ 'common.cancel' | translate }}</button>
+        <button type="submit" class="btn-primary">{{ 'common.save' | translate }}</button>
+      </div>
+    </form>
+  </app-modal>
+</div>

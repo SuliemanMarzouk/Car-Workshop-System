@@ -1,0 +1,41 @@
+<div class="app-card overflow-hidden animate-slide-up">
+  <div class="app-card-header flex items-center justify-between">
+    <h3 class="text-lg font-bold text-surface-fg">{{ 'dashboard.recent_orders.title' | translate }}</h3>
+    <a routerLink="/work-orders" class="text-sm font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400">
+      {{ 'dashboard.recent_orders.view_all' | translate }}
+    </a>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-start text-sm">
+      <thead class="table-head">
+        <tr>
+          <th class="px-6 py-3 text-start">{{ 'table.work_order_id' | translate }}</th>
+          <th class="px-6 py-3 text-start">{{ 'table.plate_number' | translate }}</th>
+          <th class="px-6 py-3 text-start">{{ 'table.owner_name' | translate }}</th>
+          <th class="px-6 py-3 text-start">{{ 'table.status' | translate }}</th>
+          <th class="px-6 py-3 text-start">{{ 'table.created_date' | translate }}</th>
+          <th class="px-6 py-3 text-start">{{ 'common.actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders" class="table-row">
+          <td class="px-6 py-4 text-start font-medium text-surface-fg">{{ order.id }}</td>
+          <td class="px-6 py-4 text-start text-surface-muted">{{ order.plate }}</td>
+          <td class="px-6 py-4 text-start text-surface-muted">{{ order.owner }}</td>
+          <td class="px-6 py-4 text-start">
+            <span [ngClass]="getStatusBadgeClass(order.status)">
+              {{ 'status.' + order.status | translate }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-start text-surface-muted">{{ order.date }}</td>
+          <td class="px-6 py-4 text-start">
+            <a routerLink="/work-orders" class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
+              <lucide-icon [name]="Eye" class="h-4 w-4"></lucide-icon>
+              {{ 'common.view_details' | translate }}
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

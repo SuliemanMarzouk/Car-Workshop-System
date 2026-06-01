@@ -1,0 +1,131 @@
+<div class="app-page">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="page-title">{{ 'invoices.title' | translate }}</h1>
+      <p class="page-subtitle mt-1">{{ 'invoices.subtitle' | translate }}</p>
+    </div>
+    <button 
+      (click)="onAddModalOpen()"
+      class="flex items-center justify-center gap-2 btn-primary w-full sm:w-auto"
+    >
+      <lucide-icon [name]="Plus" class="w-5 h-5"></lucide-icon>
+      {{ 'dashboard.quick_actions.generate_invoice' | translate }}
+    </button>
+  </div>
+
+  <div class="app-card overflow-hidden">
+    <div class="app-card-header">
+      <div class="relative max-w-md">
+        <lucide-icon [name]="Search" class="absolute start-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <input
+          type="text"
+          [placeholder]="'common.search_placeholder_invoices' | translate"
+          class="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-start text-sm">
+        <thead class="table-head">
+          <tr>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.invoice_id' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.plate_number' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.owner_name' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.status' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'table.amount' | translate }}</th>
+            <th class="px-6 py-3 font-medium text-xs text-start">{{ 'common.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr *ngIf="loading()">
+            <td colSpan="6" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+          </tr>
+          <tr *ngFor="let invoice of filteredInvoices" class="table-row">
+            <td class="px-6 py-4 font-medium text-gray-900 text-start">{{ invoice.id }}</td>
+            <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.plate_number }}</td>
+            <td class="px-6 py-4 text-gray-600 text-start">{{ invoice.work_order?.car?.owner_name }}</td>
+            <td class="px-6 py-4 text-start">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {{ 'status.paid' | translate }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-900 font-bold text-start">{{ invoice.total }} {{ 'common.sar' | translate }}</td>
+            <td class="px-6 py-4 text-start">
+              <div class="flex items-center gap-3">
+                <button 
+                  (click)="handleViewDetails(invoice)"
+                  class="text-gray-400 hover:text-blue-600 transition-colors" 
+                  [title]="'common.view_details' | translate"
+                >
+                  <lucide-icon [name]="Eye" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button class="text-gray-400 hover:text-blue-600 transition-colors" [title]="'common.download' | translate">
+                  <lucide-icon [name]="Download" class="w-4 h-4"></lucide-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Generate Invoice Modal -->
+  <app-modal 
+    [isOpen]="isAddModalOpen()" 
+    [title]="'dashboard.quick_actions.generate_invoice' | translate" 
+    (onClose)="isAddModalOpen.set(false)"
+  >
+    <form (ngSubmit)="handleSubmit()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Work Order</label>
+        <select 
+          [(ngModel)]="formData.work_order_id" 
+          name="work_order_id"
+          (change)="handleWorkOrderSelect($event)"
+          class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+        >
+          <option value="">Select an approved work order</option>
+          <option *ngFor="let wo of workOrders()" [value]="wo.id">
+            WO-{{ wo.id }} ({{ wo.car?.plate_number }})
+          </option>
+        </select>
+        <p *ngIf="errors()['work_order_id']" class="mt-1 text-xs text-red-600">{{ errors()['work_order_id'][0] }}</p>
+      </div>
+
+      <div class="space-y-3 pt-4 border-t">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Subtotal</span>
+          <span class="font-medium text-gray-900">{{ formData.subtotal }} {{ 'common.sar' | translate }}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">VAT (15%)</span>
+          <span class="font-medium text-gray-900">{{ formData.tax }} {{ 'common.sar' | translate }}</span>
+        </div>
+        <div class="flex justify-between text-base font-bold pt-2 border-t">
+          <span class="text-gray-900">Total</span>
+          <span class="text-blue-600">{{ formData.total }} {{ 'common.sar' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <button 
+          type="button" 
+          (click)="isAddModalOpen.set(false)"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit"
+          class="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Generate & Save
+        </button>
+      </div>
+    </form>
+  </app-modal>
+</div>
