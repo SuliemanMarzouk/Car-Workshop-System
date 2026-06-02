@@ -129,10 +129,11 @@ export class CarQrPrintService {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @page { size: ${CARD_WIDTH_MM} ${CARD_HEIGHT_MM}; margin: 0; }
     html, body {
-      width: ${CARD_WIDTH_MM};
-      height: ${CARD_HEIGHT_MM};
+      width: 100%;
+      height: 100%;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      overflow: hidden;
     }
     body {
       background: #fff;
@@ -307,7 +308,15 @@ export class CarQrPrintService {
       color: #e2e8f0;
     }
     .mono { font-family: 'Consolas', 'Courier New', monospace; letter-spacing: 0.02em; }
+
+    /* Preview inside iframe (screen) should fit without scrolling. */
+    @media screen {
+      html, body { width: 100%; height: 100%; }
+      .card { border-radius: 12px; }
+    }
+
     @media print {
+      html, body { width: ${CARD_WIDTH_MM}; height: ${CARD_HEIGHT_MM}; }
       html, body { margin: 0; overflow: hidden; }
       .card { border-radius: 0; }
     }
