@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Auth\Actions;
 
+use App\Application\Contracts\Repositories\UserRepositoryInterface;
 use App\Application\Auth\Data\LoginCredentials;
-use App\Infrastructure\Persistence\Eloquent\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class LoginUserAction
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function execute(LoginCredentials $credentials): array
     {
         if (! Auth::attempt([
@@ -20,10 +26,7 @@ class LoginUserAction
             ]);
         }
 
-        $user = User::query()
-            ->with('role.permissions')
-            ->where('email', $credentials->email)
-            ->firstOrFail();
+        $user = $this->users->findByEmailWithRolePermissionsOrFail($credentials->email);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

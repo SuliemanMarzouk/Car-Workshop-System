@@ -16,6 +16,8 @@ interface RoleRepositoryInterface
 
     public function findByIdOrFail(int $id): Role;
 
+    public function findBySlug(string $slug): ?Role;
+
     public function create(array $attributes): Role;
 
     public function update(Role $role, array $attributes): Role;

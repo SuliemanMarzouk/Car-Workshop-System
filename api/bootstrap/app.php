@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\Localization::class);
         $middleware->alias([
             'permission' => \App\Http\Middleware\EnsureUserHasPermission::class,
+            'central.provision' => \App\Http\Middleware\EnsureCentralProvisioningToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

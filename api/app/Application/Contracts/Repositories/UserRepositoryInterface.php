@@ -15,6 +15,10 @@ interface UserRepositoryInterface
 
     public function findByIdOrFail(int $id): User;
 
+    public function findByEmail(string $email): ?User;
+
+    public function findByEmailWithRolePermissionsOrFail(string $email): User;
+
     public function create(array $attributes): User;
 
     public function update(User $user, array $attributes): User;

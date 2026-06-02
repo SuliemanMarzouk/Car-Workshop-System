@@ -39,6 +39,7 @@ import {
 import { API_BASE_URL } from '@core/config/api.config';
 import { httpLoaderFactory } from '@core/i18n/custom-translate.loader';
 import { tokenInterceptor } from '@core/auth/interceptors/token.interceptor';
+import { tenantInterceptor } from '@core/workshop/interceptors/tenant.interceptor';
 import { environment } from '@env/environment';
 import { routes } from './app.routes';
 
@@ -47,7 +48,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     { provide: API_BASE_URL, useValue: environment.apiUrl },
-    provideHttpClient(withInterceptors([tokenInterceptor])),
+    provideHttpClient(withInterceptors([tenantInterceptor, tokenInterceptor])),
     importProvidersFrom(
       TranslateModule.forRoot({
         loader: {

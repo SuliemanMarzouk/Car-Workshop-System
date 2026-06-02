@@ -8,10 +8,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([
-            RolesAndPermissionsSeeder::class,
-            SettingsSeeder::class,
-            AdminUserSeeder::class,
-        ]);
+        // Central seeding intentionally left empty.
+        //
+        // Tenant databases are seeded via `Database\Seeders\TenantDatabaseSeeder`
+        // executed by `php artisan tenants:seed` (and by the TenantCreated job pipeline).
     }
 }

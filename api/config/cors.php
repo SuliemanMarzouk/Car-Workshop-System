@@ -19,9 +19,18 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:4200', 'http://127.0.0.1:4200', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    'allowed_origins' => [
+        'http://localhost:4200',
+        'http://127.0.0.1:4200',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Support tenant subdomains in dev, e.g. http://workshop1.localhost:4200
+        '#^https?://([a-z0-9-]+\.)?localhost(:\d+)?$#i',
+        '#^https?://127\.0\.0\.1(:\d+)?$#i',
+    ],
 
     'allowed_headers' => ['*'],
 

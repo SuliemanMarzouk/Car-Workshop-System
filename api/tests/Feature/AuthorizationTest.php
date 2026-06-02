@@ -6,21 +6,26 @@ use App\Domain\Authorization\Enums\Permission;
 use App\Domain\Authorization\Enums\RoleSlug;
 use App\Infrastructure\Persistence\Eloquent\Models\Role;
 use App\Infrastructure\Persistence\Eloquent\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Infrastructure\Tenancy\Models\Tenant;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthorizationTest extends TestCase
 {
-    use RefreshDatabase;
+    private string $tenantId;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed([
-            \Database\Seeders\RolesAndPermissionsSeeder::class,
-        ]);
+        $this->tenantId = 'tenant_' . bin2hex(random_bytes(4));
+
+        Artisan::call('migrate:fresh', ['--database' => 'central']);
+
+        $tenant = Tenant::create(['id' => $this->tenantId]);
+        tenancy()->initialize($tenant);
+        $this->withHeader('X-Tenant', $this->tenantId);
     }
 
     public function test_user_endpoint_returns_flat_permissions_array(): void

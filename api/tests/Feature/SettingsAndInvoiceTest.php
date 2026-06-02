@@ -12,23 +12,27 @@ use App\Infrastructure\Persistence\Eloquent\Models\Role;
 use App\Infrastructure\Persistence\Eloquent\Models\User;
 use App\Infrastructure\Persistence\Eloquent\Models\WorkOrder;
 use App\Infrastructure\Persistence\Eloquent\Models\WorkOrderItem;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Infrastructure\Tenancy\Models\Tenant;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class SettingsAndInvoiceTest extends TestCase
 {
-    use RefreshDatabase;
+    private string $tenantId;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed([
-            \Database\Seeders\RolesAndPermissionsSeeder::class,
-            \Database\Seeders\SettingsSeeder::class,
-        ]);
+        $this->tenantId = 'tenant_' . bin2hex(random_bytes(4));
+
+        Artisan::call('migrate:fresh', ['--database' => 'central']);
+
+        $tenant = Tenant::create(['id' => $this->tenantId]);
+        tenancy()->initialize($tenant);
+        $this->withHeader('X-Tenant', $this->tenantId);
     }
 
     public function test_update_settings_action_persists_values(): void

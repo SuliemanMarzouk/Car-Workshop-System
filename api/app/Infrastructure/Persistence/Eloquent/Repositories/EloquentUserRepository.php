@@ -28,6 +28,19 @@ class EloquentUserRepository implements UserRepositoryInterface
         return User::query()->findOrFail($id);
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        return User::query()->where('email', $email)->first();
+    }
+
+    public function findByEmailWithRolePermissionsOrFail(string $email): User
+    {
+        return User::query()
+            ->with('role.permissions')
+            ->where('email', $email)
+            ->firstOrFail();
+    }
+
     public function create(array $attributes): User
     {
         return User::query()->create($attributes);

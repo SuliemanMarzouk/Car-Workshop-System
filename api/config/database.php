@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'central'),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,6 +30,47 @@ return [
     */
 
     'connections' => [
+
+        'central' => [
+            'driver' => env('CENTRAL_DB_DRIVER', 'mysql'),
+            'url' => env('CENTRAL_DB_URL'),
+            'host' => env('CENTRAL_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('CENTRAL_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('CENTRAL_DB_DATABASE', env('DB_DATABASE', 'car_workshop_central')),
+            'username' => env('CENTRAL_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('CENTRAL_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('CENTRAL_DB_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('CENTRAL_DB_CHARSET', env('DB_CHARSET', 'utf8mb4')),
+            'collation' => env('CENTRAL_DB_COLLATION', env('DB_COLLATION', 'utf8mb4_unicode_ci')),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'tenant_template' => [
+            'driver' => env('TENANT_DB_DRIVER', env('CENTRAL_DB_DRIVER', 'mysql')),
+            'url' => env('TENANT_DB_URL', env('CENTRAL_DB_URL')),
+            'host' => env('TENANT_DB_HOST', env('CENTRAL_DB_HOST', env('DB_HOST', '127.0.0.1'))),
+            'port' => env('TENANT_DB_PORT', env('CENTRAL_DB_PORT', env('DB_PORT', '3306'))),
+            // Database name is set dynamically per tenant (e.g. tenant_workshop1) by stancl/tenancy.
+            'database' => env('TENANT_DB_DATABASE', env('DB_DATABASE', 'car_workshop_central')),
+            'username' => env('TENANT_DB_USERNAME', env('CENTRAL_DB_USERNAME', env('DB_USERNAME', 'root'))),
+            'password' => env('TENANT_DB_PASSWORD', env('CENTRAL_DB_PASSWORD', env('DB_PASSWORD', ''))),
+            'unix_socket' => env('TENANT_DB_SOCKET', env('CENTRAL_DB_SOCKET', env('DB_SOCKET', ''))),
+            'charset' => env('TENANT_DB_CHARSET', env('CENTRAL_DB_CHARSET', env('DB_CHARSET', 'utf8mb4'))),
+            'collation' => env('TENANT_DB_COLLATION', env('CENTRAL_DB_COLLATION', env('DB_COLLATION', 'utf8mb4_unicode_ci'))),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',

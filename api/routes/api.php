@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CarController;
+use App\Http\Controllers\Api\V1\CentralTenantController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
@@ -11,19 +12,26 @@ use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WorkOrderController;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
 
 Route::prefix('v1')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
-    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.reset');
+    Route::prefix('central')->middleware('central.provision')->group(function () {
+        Route::get('/tenants', [CentralTenantController::class, 'index']);
+        Route::post('/tenants', [CentralTenantController::class, 'store']);
+    });
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/user', [AuthController::class, 'user']);
+    Route::middleware([InitializeTenancyByRequestData::class])->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+        Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.reset');
 
-        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
-            ->middleware('permission:dashboard.view');
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/logout', [AuthController::class, 'logout']);
+            Route::get('/user', [AuthController::class, 'user']);
+
+            Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+                ->middleware('permission:dashboard.view');
 
         Route::get('/permissions', [PermissionController::class, 'index'])
             ->middleware('permission:roles.view,roles.create,roles.update');
@@ -89,7 +97,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:settings.view');
         Route::put('/settings', [SettingsController::class, 'update'])
             ->middleware('permission:settings.update');
-        Route::patch('/settings', [SettingsController::class, 'update'])
-            ->middleware('permission:settings.update');
+            Route::patch('/settings', [SettingsController::class, 'update'])
+                ->middleware('permission:settings.update');
+        });
     });
 });

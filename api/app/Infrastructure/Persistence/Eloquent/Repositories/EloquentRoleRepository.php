@@ -31,6 +31,11 @@ class EloquentRoleRepository implements RoleRepositoryInterface
         return Role::query()->findOrFail($id);
     }
 
+    public function findBySlug(string $slug): ?Role
+    {
+        return Role::query()->where('slug', $slug)->first();
+    }
+
     public function create(array $attributes): Role
     {
         return Role::query()->create($attributes);
