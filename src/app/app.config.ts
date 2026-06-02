@@ -5,6 +5,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import {
   AlertCircle,
   ArrowLeft,
+  Building2,
   Car,
   CheckCircle,
   ClipboardList,
@@ -23,6 +24,8 @@ import {
   LucideAngularModule,
   Mail,
   Menu,
+  PauseCircle,
+  X,
   Plus,
   QrCode,
   Receipt,
@@ -30,16 +33,17 @@ import {
   Search,
   Settings,
   Shield,
+  Sparkles,
   Trash2,
   User,
   Users,
-  X,
   XCircle,
 } from 'lucide-angular';
 import { API_BASE_URL } from '@core/config/api.config';
 import { httpLoaderFactory } from '@core/i18n/custom-translate.loader';
 import { tokenInterceptor } from '@core/auth/interceptors/token.interceptor';
 import { tenantInterceptor } from '@core/workshop/interceptors/tenant.interceptor';
+import { centralTokenInterceptor } from '@features/saas-admin/interceptors/central-token.interceptor';
 import { environment } from '@env/environment';
 import { routes } from './app.routes';
 
@@ -48,7 +52,9 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     { provide: API_BASE_URL, useValue: environment.apiUrl },
-    provideHttpClient(withInterceptors([tenantInterceptor, tokenInterceptor])),
+    provideHttpClient(
+      withInterceptors([tenantInterceptor, centralTokenInterceptor, tokenInterceptor]),
+    ),
     importProvidersFrom(
       TranslateModule.forRoot({
         loader: {
@@ -59,9 +65,11 @@ export const appConfig: ApplicationConfig = {
         defaultLanguage: 'ar',
       }),
       LucideAngularModule.pick({
+        Building2,
         Car,
         User,
         LogOut,
+        PauseCircle,
         Menu,
         X,
         Globe,
@@ -88,6 +96,7 @@ export const appConfig: ApplicationConfig = {
         Key,
         ArrowLeft,
         Shield,
+        Sparkles,
         XCircle,
         Filter,
       }),

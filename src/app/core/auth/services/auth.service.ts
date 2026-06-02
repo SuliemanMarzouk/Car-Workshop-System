@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiClient } from '@core/http/api-client.service';
 import { AuthLoginResponse, AuthResult, AuthUser } from '@core/auth/models/auth-session.model';
 import { normalizeAuthUser } from '@core/auth/utils/auth-user.mapper';
+import { isPlatformBrowserContext } from '@core/workshop/tenant-context';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -19,6 +20,12 @@ export class AuthService {
   private sessionGeneration = 0;
 
   constructor() {
+    // Workshop session must not call tenant /user while browsing platform admin.
+    if (isPlatformBrowserContext()) {
+      this.isLoading.set(false);
+      return;
+    }
+
     void this.checkAuth();
   }
 

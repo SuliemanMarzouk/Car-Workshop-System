@@ -17,7 +17,7 @@ class LoginUserAction
 
     public function execute(LoginCredentials $credentials): array
     {
-        if (! Auth::attempt([
+        if (! Auth::guard('web')->attempt([
             'email' => $credentials->email,
             'password' => $credentials->password,
         ])) {

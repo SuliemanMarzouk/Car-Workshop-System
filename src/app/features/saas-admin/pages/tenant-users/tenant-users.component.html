@@ -1,0 +1,141 @@
+<section class="space-y-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <a routerLink="/platform/tenants" class="mb-3 inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+        <lucide-icon [name]="ArrowLeft" class="h-4 w-4"></lucide-icon>
+        {{ 'saas_admin.back_to_tenants' | translate }}
+      </a>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+        {{ tenant()?.name || tenantId }}
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">{{ 'saas_admin.tenant_users_subtitle' | translate }}</p>
+      <a
+        *ngIf="tenant()?.workshop_url"
+        class="mt-2 inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+        [href]="tenant()!.workshop_url!"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ tenant()?.primary_domain }}
+        <lucide-icon [name]="ExternalLink" class="h-3.5 w-3.5"></lucide-icon>
+      </a>
+    </div>
+    <button type="button" class="btn-primary" (click)="openCreateModal()" [disabled]="loading()">
+      <lucide-icon [name]="Plus" class="h-4 w-4"></lucide-icon>
+      {{ 'saas_admin.add_tenant_user' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="error()" class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+    {{ error() }}
+  </div>
+
+  <div class="platform-card overflow-hidden !p-0">
+    <div *ngIf="loading()" class="flex justify-center py-16">
+      <lucide-icon [name]="Loader2" class="h-8 w-8 animate-spin text-indigo-600"></lucide-icon>
+    </div>
+
+    <div class="overflow-x-auto" *ngIf="!loading()">
+      <table class="platform-table">
+        <thead class="bg-slate-50 dark:bg-slate-800/50">
+          <tr>
+            <th>{{ 'auth.name' | translate }}</th>
+            <th>{{ 'auth.email' | translate }}</th>
+            <th>{{ 'users.role' | translate }}</th>
+            <th>{{ 'saas_admin.created_at' | translate }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="users().length === 0">
+            <td colspan="5" class="py-12 text-center text-slate-500">
+              {{ 'saas_admin.no_tenant_users' | translate }}
+            </td>
+          </tr>
+          <tr *ngFor="let user of users()">
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                  <lucide-icon [name]="User" class="h-4 w-4"></lucide-icon>
+                </div>
+                <span class="font-medium text-slate-900 dark:text-white">{{ user.name }}</span>
+              </div>
+            </td>
+            <td class="text-slate-500">{{ user.email }}</td>
+            <td class="text-slate-500">{{ roleLabel(user) }}</td>
+            <td class="text-slate-500">{{ user.created_at | date: 'mediumDate' }}</td>
+            <td class="text-end">
+              <button type="button" class="btn-secondary text-xs" (click)="openResetModal(user)">
+                <lucide-icon [name]="Key" class="h-3.5 w-3.5"></lucide-icon>
+                {{ 'saas_admin.reset_password' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<app-modal
+  [isOpen]="createModalOpen()"
+  [title]="'saas_admin.add_tenant_user' | translate"
+  (onClose)="closeCreateModal()"
+>
+  <form class="space-y-4" (ngSubmit)="submitCreate()">
+    <div>
+      <label class="input-label">{{ 'auth.name' | translate }}</label>
+      <input class="input-field w-full" required [(ngModel)]="createForm.name" name="name" />
+    </div>
+    <div>
+      <label class="input-label">{{ 'auth.email' | translate }}</label>
+      <input type="email" class="input-field w-full" required [(ngModel)]="createForm.email" name="email" />
+    </div>
+    <div>
+      <label class="input-label">{{ 'auth.password' | translate }}</label>
+      <input type="password" class="input-field w-full" required [(ngModel)]="createForm.password" name="password" />
+    </div>
+    <div>
+      <label class="input-label">{{ 'users.role' | translate }}</label>
+      <select class="input-field w-full" required [(ngModel)]="createForm.role_id" name="role_id">
+        <option *ngFor="let role of roles()" [ngValue]="role.id">
+          {{ language.isArabic() ? role.name_ar : role.name }}
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" class="btn-secondary" (click)="closeCreateModal()">{{ 'saas_admin.cancel' | translate }}</button>
+      <button type="submit" class="btn-primary" [disabled]="saving()">{{ 'saas_admin.save' | translate }}</button>
+    </div>
+  </form>
+</app-modal>
+
+<app-modal
+  [isOpen]="resetModalOpen()"
+  [title]="'saas_admin.reset_password' | translate"
+  (onClose)="closeResetModal()"
+>
+  <p class="mb-4 text-sm text-slate-500">
+    {{ selectedUser()?.name }} — {{ selectedUser()?.email }}
+  </p>
+  <form class="space-y-4" (ngSubmit)="submitReset()">
+    <div>
+      <label class="input-label">{{ 'auth.password' | translate }}</label>
+      <input type="password" class="input-field w-full" required [(ngModel)]="resetForm.password" name="password" />
+    </div>
+    <div>
+      <label class="input-label">{{ 'auth.confirm_password' | translate }}</label>
+      <input
+        type="password"
+        class="input-field w-full"
+        required
+        [(ngModel)]="resetForm.password_confirmation"
+        name="password_confirmation"
+      />
+    </div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" class="btn-secondary" (click)="closeResetModal()">{{ 'saas_admin.cancel' | translate }}</button>
+      <button type="submit" class="btn-primary" [disabled]="saving()">{{ 'saas_admin.reset_password' | translate }}</button>
+    </div>
+  </form>
+</app-modal>

@@ -3,7 +3,15 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
+function isCentralApiRequest(url: string): boolean {
+  return url.includes('/central/');
+}
+
 export const tokenInterceptor: HttpInterceptorFn = (request, next) => {
+  if (isCentralApiRequest(request.url)) {
+    return next(request);
+  }
+
   const router = inject(Router);
   const token = localStorage.getItem('token');
 

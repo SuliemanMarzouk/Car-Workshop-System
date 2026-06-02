@@ -1,0 +1,13 @@
+<div class="flex min-h-screen items-center justify-center bg-surface-bg px-4">
+  <div class="max-w-md text-center">
+    <lucide-icon [name]="AlertCircle" class="mx-auto mb-4 h-14 w-14 text-amber-500"></lucide-icon>
+    <h1 class="text-2xl font-bold text-surface-fg">{{ 'errors.workshop_not_found_title' | translate }}</h1>
+    <p class="mt-2 text-surface-muted">
+      {{ 'errors.workshop_not_found_body' | translate }}
+      <strong *ngIf="workshopId" class="text-surface-fg">{{ workshopId }}</strong>
+    </p>
+    <a [href]="platformUrl" class="btn-primary mt-6 inline-flex">
+      {{ 'saas_admin.platform_title' | translate }}
+    </a>
+  </div>
+</div>

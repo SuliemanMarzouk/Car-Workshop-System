@@ -1,30 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { isPlatformBrowserContext, resolveWorkshopTenantKey } from '../tenant-context';
 
-function resolveTenantKeyFromHostname(hostname: string): string | null {
-  // Examples:
-  // - workshop1.localhost => workshop1
-  // - workshop1.example.com => workshop1
-  // - localhost / 127.0.0.1 => null
-  const host = hostname.trim().toLowerCase();
-  if (!host || host === 'localhost' || host === '127.0.0.1') {
-    return null;
-  }
-
-  const parts = host.split('.').filter(Boolean);
-  if (parts.length < 2) {
-    return null;
-  }
-
-  const subdomain = parts[0];
-  if (!subdomain || subdomain === 'www') {
-    return null;
-  }
-
-  return subdomain;
+function isCentralApiRequest(url: string): boolean {
+  return url.includes('/central/');
 }
 
 export const tenantInterceptor: HttpInterceptorFn = (request, next) => {
-  const tenantKey = resolveTenantKeyFromHostname(window.location.hostname);
+  if (isCentralApiRequest(request.url) || isPlatformBrowserContext()) {
+    return next(request);
+  }
+
+  const tenantKey = resolveWorkshopTenantKey();
   if (!tenantKey) {
     return next(request);
   }
@@ -37,4 +23,3 @@ export const tenantInterceptor: HttpInterceptorFn = (request, next) => {
     }),
   );
 };
-

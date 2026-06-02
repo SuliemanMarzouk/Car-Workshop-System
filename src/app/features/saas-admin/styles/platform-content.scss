@@ -1,0 +1,66 @@
+.platform-layout {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.platform-login-panel {
+  background: var(--gradient-brand);
+}
+
+.platform-card {
+  @apply rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900;
+}
+
+.platform-stat {
+  @apply platform-card relative overflow-hidden;
+}
+
+.platform-stat::after {
+  content: '';
+  @apply pointer-events-none absolute -end-6 -top-6 h-24 w-24 rounded-full bg-indigo-500/10;
+}
+
+.platform-table {
+  @apply min-w-full text-sm;
+}
+
+.platform-table th {
+  @apply px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400;
+}
+
+.platform-table td {
+  @apply border-t border-slate-100 px-4 py-3 dark:border-slate-800;
+}
+
+.platform-badge-active {
+  @apply inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300;
+}
+
+.platform-badge-suspended {
+  @apply inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-900/40 dark:text-amber-300;
+}
+
+.platform-row-actions {
+  @apply inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-800/60;
+}
+
+.platform-row-action {
+  @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
+}
+
+.platform-row-action--users {
+  @apply text-indigo-700 hover:bg-indigo-50 dark:text-indigo-300 dark:hover:bg-indigo-950/50;
+}
+
+.platform-row-action--suspend {
+  @apply text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-950/40;
+}
+
+.platform-row-action--activate {
+  @apply text-emerald-800 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40;
+}
+
+.platform-workshop-link {
+  @apply inline-flex max-w-[220px] items-center gap-1.5 rounded-lg border border-indigo-200/80 bg-indigo-50/60 px-2.5 py-1 font-mono text-xs text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-500/30 dark:bg-indigo-950/30 dark:text-indigo-300 dark:hover:bg-indigo-950/50;
+}

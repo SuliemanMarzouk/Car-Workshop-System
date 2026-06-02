@@ -9,26 +9,39 @@ use Tests\TestCase;
 
 class CentralProvisioningTest extends TestCase
 {
-    public function test_central_provisioning_requires_token(): void
+    protected function setUp(): void
     {
-        Artisan::call('migrate:fresh', ['--database' => 'central']);
+        parent::setUp();
 
-        $this->postJson('/api/v1/central/tenants', ['id' => 'workshopx'])
-            ->assertForbidden();
+        Artisan::call('migrate:fresh', ['--database' => 'central']);
+        $this->seed(\Database\Seeders\CentralDatabaseSeeder::class);
     }
 
-    public function test_central_provisioning_creates_tenant_and_allows_login_with_x_tenant_header(): void
+    public function test_central_tenant_provisioning_requires_super_admin_auth(): void
     {
-        Artisan::call('migrate:fresh', ['--database' => 'central']);
+        $this->postJson('/api/v1/central/tenants', ['id' => 'workshopx'])
+            ->assertUnauthorized();
+    }
 
-        config()->set('tenancy.central_provisioning_token', 'test-token');
+    public function test_super_admin_creates_tenant_and_allows_login_with_x_tenant_header(): void
+    {
+        $login = $this->postJson('/api/v1/central/auth/login', [
+            'email' => 'admin@platform.local',
+            'password' => 'password',
+        ])->assertOk();
 
+        $token = (string) $login->json('access_token');
         $tenantId = 'workshop_' . bin2hex(random_bytes(4));
 
         $this
-            ->withHeader('X-Central-Token', 'test-token')
+            ->withToken($token)
             ->postJson('/api/v1/central/tenants', [
                 'id' => $tenantId,
+                'workshop_name' => 'Test Workshop',
+                'phone' => '+966500000000',
+                'email' => 'workshop@example.com',
+                'default_currency' => 'USD',
+                'vat_rate' => 0.15,
                 'domain' => "{$tenantId}.localhost",
             ])
             ->assertCreated()
@@ -44,4 +57,3 @@ class CentralProvisioningTest extends TestCase
             ->assertJsonStructure(['access_token', 'token_type', 'user']);
     }
 }
-

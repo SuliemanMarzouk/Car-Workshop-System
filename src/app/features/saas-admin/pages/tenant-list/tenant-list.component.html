@@ -1,0 +1,146 @@
+<section class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+        {{ 'saas_admin.tenants_title' | translate }}
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">{{ 'saas_admin.tenants_subtitle' | translate }}</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="openCreateModal()">
+      <lucide-icon [name]="Plus" class="h-4 w-4"></lucide-icon>
+      {{ 'saas_admin.create_tenant' | translate }}
+    </button>
+  </div>
+
+  <form class="platform-card flex flex-wrap items-center gap-2 !p-4" (ngSubmit)="onSearch()">
+    <div class="relative min-w-[200px] flex-1">
+      <lucide-icon
+        [name]="Search"
+        class="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+      ></lucide-icon>
+      <input
+        class="input-field w-full ps-10"
+        [(ngModel)]="searchInput"
+        name="search"
+        [placeholder]="'saas_admin.search_placeholder' | translate"
+      />
+    </div>
+    <button type="submit" class="btn-primary inline-flex items-center gap-2">
+      <lucide-icon [name]="Search" class="h-4 w-4"></lucide-icon>
+      {{ 'cars.search' | translate }}
+    </button>
+  </form>
+
+  <div *ngIf="state.error()" class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+    {{ state.error() }}
+  </div>
+
+  <div class="platform-card overflow-hidden !p-0">
+    <div *ngIf="state.tenantsLoading()" class="flex justify-center py-16">
+      <lucide-icon [name]="Loader2" class="h-8 w-8 animate-spin text-indigo-600"></lucide-icon>
+    </div>
+
+    <div class="overflow-x-auto" *ngIf="!state.tenantsLoading()">
+      <table class="platform-table">
+        <thead class="bg-slate-50 dark:bg-slate-800/50">
+          <tr>
+            <th>{{ 'saas_admin.workshop_name' | translate }}</th>
+            <th>{{ 'saas_admin.link' | translate }}</th>
+            <th>{{ 'saas_admin.status' | translate }}</th>
+            <th>{{ 'saas_admin.created_at' | translate }}</th>
+            <th class="text-end">{{ 'common.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="state.tenants().length === 0">
+            <td colspan="5" class="py-12 text-center text-slate-500">
+              {{ 'saas_admin.no_tenants' | translate }}
+            </td>
+          </tr>
+          <tr *ngFor="let tenant of state.tenants()">
+            <td>
+              <p class="font-semibold text-slate-900 dark:text-white">{{ tenant.name }}</p>
+              <p class="text-xs text-slate-500">{{ tenant.id }}</p>
+            </td>
+            <td>
+              <a
+                *ngIf="tenantUrl(tenant) as url"
+                class="platform-workshop-link"
+                [href]="url"
+                target="_blank"
+                rel="noopener noreferrer"
+                [title]="url"
+              >
+                <span class="truncate">{{ tenantDomain(tenant) }}</span>
+                <lucide-icon [name]="ExternalLink" class="h-3.5 w-3.5 shrink-0"></lucide-icon>
+              </a>
+              <span *ngIf="!tenantUrl(tenant)" class="text-slate-400">—</span>
+            </td>
+            <td>
+              <span [class]="tenant.status === 'active' ? 'platform-badge-active' : 'platform-badge-suspended'">
+                {{ (tenant.status === 'active' ? 'saas_admin.active' : 'saas_admin.suspended') | translate }}
+              </span>
+            </td>
+            <td class="text-slate-500">{{ tenant.created_at | date: 'mediumDate' }}</td>
+            <td class="text-end">
+              <div class="platform-row-actions">
+                <a
+                  [routerLink]="['/platform/tenants', tenant.id]"
+                  class="platform-row-action platform-row-action--users"
+                  [title]="'saas_admin.manage_users' | translate"
+                >
+                  <lucide-icon [name]="Users" class="h-3.5 w-3.5"></lucide-icon>
+                  <span class="hidden sm:inline">{{ 'saas_admin.manage_users' | translate }}</span>
+                </a>
+                <button
+                  type="button"
+                  class="platform-row-action"
+                  [class.platform-row-action--suspend]="tenant.status === 'active'"
+                  [class.platform-row-action--activate]="tenant.status !== 'active'"
+                  [disabled]="state.actionLoading()"
+                  [title]="(tenant.status === 'active' ? 'saas_admin.suspend' : 'saas_admin.activate') | translate"
+                  (click)="toggleStatus(tenant)"
+                >
+                  <lucide-icon
+                    [name]="tenant.status === 'active' ? PauseCircle : PlayCircle"
+                    class="h-3.5 w-3.5"
+                  ></lucide-icon>
+                  <span class="hidden sm:inline">
+                    {{ (tenant.status === 'active' ? 'saas_admin.suspend' : 'saas_admin.activate') | translate }}
+                  </span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      *ngIf="!state.tenantsLoading() && state.tenantsMeta().last_page > 1"
+      class="flex items-center justify-between border-t border-slate-100 px-4 py-3 dark:border-slate-800"
+    >
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="state.tenantsMeta().current_page <= 1"
+        (click)="changePage(state.tenantsMeta().current_page - 1)"
+      >
+        ‹
+      </button>
+      <span class="text-sm text-slate-500">
+        {{ state.tenantsMeta().current_page }} / {{ state.tenantsMeta().last_page }}
+      </span>
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="state.tenantsMeta().current_page >= state.tenantsMeta().last_page"
+        (click)="changePage(state.tenantsMeta().current_page + 1)"
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</section>
+
+<app-create-tenant-modal [open]="createModalOpen()" (closed)="closeCreateModal()" />

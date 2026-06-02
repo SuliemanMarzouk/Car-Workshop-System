@@ -217,4 +217,12 @@ return [
         '--class' => \Database\Seeders\TenantDatabaseSeeder::class, // root seeder class for tenant DBs
         // '--force' => true, // This needs to be true to seed tenant databases in production
     ],
+
+    /**
+     * Workshop SPA access URL parts (subdomain.domain:port).
+     */
+    'workshop_access' => [
+        'scheme' => env('WORKSHOP_ACCESS_SCHEME', 'http'),
+        'port' => env('WORKSHOP_FRONTEND_PORT', '4200'),
+    ],
 ];

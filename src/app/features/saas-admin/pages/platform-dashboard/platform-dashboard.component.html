@@ -1,0 +1,76 @@
+<section class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+      {{ 'saas_admin.nav_dashboard' | translate }}
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">{{ 'saas_admin.dashboard_subtitle' | translate }}</p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="platform-stat">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {{ 'saas_admin.total_tenants' | translate }}
+      </p>
+      <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+        {{ state.stats()?.total_tenants ?? '—' }}
+      </p>
+    </div>
+    <div class="platform-stat">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">
+        {{ 'saas_admin.active_tenants' | translate }}
+      </p>
+      <p class="mt-2 text-3xl font-bold text-emerald-700 dark:text-emerald-400">
+        {{ state.stats()?.active_tenants ?? '—' }}
+      </p>
+    </div>
+    <div class="platform-stat">
+      <p class="text-xs font-semibold uppercase tracking-wide text-amber-600">
+        {{ 'saas_admin.suspended_tenants' | translate }}
+      </p>
+      <p class="mt-2 text-3xl font-bold text-amber-700 dark:text-amber-400">
+        {{ state.stats()?.suspended_tenants ?? '—' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="platform-card">
+    <h2 class="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
+      {{ 'saas_admin.recent_tenants' | translate }}
+    </h2>
+    <div class="overflow-x-auto" *ngIf="!state.statsLoading()">
+      <table class="platform-table">
+        <thead>
+          <tr>
+            <th>{{ 'saas_admin.workshop_name' | translate }}</th>
+            <th>{{ 'saas_admin.link' | translate }}</th>
+            <th>{{ 'saas_admin.status' | translate }}</th>
+            <th>{{ 'saas_admin.created_at' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tenant of state.stats()?.recent_tenants ?? []">
+            <td class="font-medium text-slate-900 dark:text-white">{{ tenant.name }}</td>
+            <td class="text-slate-500">
+              <a
+                *ngIf="tenant.workshop_url"
+                class="font-mono text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+                [href]="tenant.workshop_url"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ tenant.primary_domain || tenant.domains[0] || tenant.id }}
+              </a>
+              <span *ngIf="!tenant.workshop_url">{{ tenant.primary_domain || tenant.domains[0] || tenant.id }}</span>
+            </td>
+            <td>
+              <span [class]="tenant.status === 'active' ? 'platform-badge-active' : 'platform-badge-suspended'">
+                {{ (tenant.status === 'active' ? 'saas_admin.active' : 'saas_admin.suspended') | translate }}
+              </span>
+            </td>
+            <td class="text-slate-500">{{ tenant.created_at | date: 'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
+use App\Listeners\Tenancy\ApplyTenantInitialSettings;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
 
@@ -62,7 +63,9 @@ class TenancyServiceProvider extends ServiceProvider
             // Database events
             Events\DatabaseCreated::class => [],
             Events\DatabaseMigrated::class => [],
-            Events\DatabaseSeeded::class => [],
+            Events\DatabaseSeeded::class => [
+                ApplyTenantInitialSettings::class,
+            ],
             Events\DatabaseRolledBack::class => [],
             Events\DatabaseDeleted::class => [],
 

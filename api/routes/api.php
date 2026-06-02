@@ -2,10 +2,15 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CarController;
+use App\Http\Controllers\Api\V1\CentralAuthController;
+use App\Http\Controllers\Api\V1\CentralDashboardController;
 use App\Http\Controllers\Api\V1\CentralTenantController;
+use App\Http\Controllers\Api\V1\CentralTenantUserController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
+use App\Http\Controllers\Api\V1\PublicWorkshopController;
+use App\Http\Middleware\RejectSuspendedTenant;
 use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SettingsController;
@@ -15,12 +20,33 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
 
 Route::prefix('v1')->group(function () {
-    Route::prefix('central')->middleware('central.provision')->group(function () {
-        Route::get('/tenants', [CentralTenantController::class, 'index']);
-        Route::post('/tenants', [CentralTenantController::class, 'store']);
+    Route::get('/public/workshops/{tenantId}', [PublicWorkshopController::class, 'show']);
+
+    Route::prefix('central')->group(function () {
+        Route::post('/auth/login', [CentralAuthController::class, 'login']);
+
+        Route::middleware(['auth:sanctum', 'central.admin'])->group(function () {
+            Route::post('/auth/logout', [CentralAuthController::class, 'logout']);
+            Route::get('/auth/user', [CentralAuthController::class, 'user']);
+            Route::get('/dashboard/stats', [CentralDashboardController::class, 'stats']);
+            Route::get('/tenants', [CentralTenantController::class, 'index']);
+            Route::post('/tenants', [CentralTenantController::class, 'store']);
+            Route::get('/tenants/{tenant}', [CentralTenantController::class, 'show']);
+            Route::patch('/tenants/{tenant}/status', [CentralTenantController::class, 'updateStatus']);
+
+            Route::middleware('central.tenant')->group(function () {
+                Route::get('/tenants/{tenant}/users', [CentralTenantUserController::class, 'index']);
+                Route::post('/tenants/{tenant}/users', [CentralTenantUserController::class, 'store']);
+                Route::patch('/tenants/{tenant}/users/{user}/password', [CentralTenantUserController::class, 'resetPassword']);
+                Route::get('/tenants/{tenant}/roles', [CentralTenantUserController::class, 'roles']);
+            });
+        });
     });
 
-    Route::middleware([InitializeTenancyByRequestData::class])->group(function () {
+    Route::middleware([
+        InitializeTenancyByRequestData::class,
+        RejectSuspendedTenant::class,
+    ])->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');

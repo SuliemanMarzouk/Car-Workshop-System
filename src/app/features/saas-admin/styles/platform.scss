@@ -1,0 +1,118 @@
+.platform-layout {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.platform-sidebar {
+  @apply h-screen w-64 flex-col border-e border-surface-border;
+  background-color: var(--bg-card);
+}
+
+.platform-sidebar--desktop {
+  @apply hidden lg:flex;
+}
+
+.platform-sidebar--drawer {
+  @apply flex lg:hidden;
+}
+
+.platform-main {
+  @apply min-h-screen flex-1 overflow-y-auto bg-surface text-surface-fg;
+}
+
+.platform-header {
+  @apply sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-surface-border px-4 backdrop-blur-xl lg:px-8;
+  background: var(--bg-header);
+}
+
+.platform-header__start {
+  @apply flex min-w-0 flex-1 items-center gap-3;
+}
+
+.platform-header__brand {
+  @apply flex min-w-0 items-center gap-3;
+}
+
+.platform-header__brand-icon {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white shadow-sm;
+  background: var(--gradient-brand);
+}
+
+.platform-header__title {
+  @apply truncate text-sm font-semibold tracking-tight text-surface-fg sm:text-base;
+}
+
+.platform-header__subtitle {
+  @apply truncate text-xs text-surface-muted;
+}
+
+.platform-header__end {
+  @apply flex shrink-0 items-center gap-2 sm:gap-3;
+}
+
+.platform-header__divider {
+  @apply hidden h-8 w-px bg-surface-border sm:block;
+}
+
+.platform-header__account {
+  @apply flex items-center gap-1.5 sm:gap-2;
+}
+
+.platform-header-icon-btn {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-surface-muted transition-colors hover:bg-accent-muted hover:text-surface-fg;
+}
+
+.platform-user-chip {
+  @apply hidden items-center gap-2.5 rounded-full border border-surface-border py-1 ps-1 pe-3 shadow-sm sm:flex;
+  background-color: var(--bg-elevated);
+}
+
+.platform-user-avatar {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ring-2 ring-surface-card;
+  background: var(--gradient-brand);
+}
+
+.platform-user-meta {
+  @apply hidden min-w-0 text-start md:block;
+}
+
+.platform-user-name {
+  @apply max-w-[10rem] truncate text-sm font-semibold leading-tight text-surface-fg;
+}
+
+.platform-user-role {
+  @apply text-[11px] font-medium uppercase tracking-wide text-brand-600 dark:text-brand-400;
+}
+
+.platform-logout-btn {
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg px-2.5 text-sm font-medium text-surface-muted transition-colors hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 md:px-3;
+}
+
+.platform-sidebar__brand {
+  @apply border-b border-surface-border px-5 py-6;
+}
+
+.platform-sidebar__brand-icon {
+  @apply flex h-10 w-10 items-center justify-center rounded-xl bg-accent-muted text-brand-600 dark:text-brand-400;
+}
+
+.platform-sidebar__brand-label {
+  @apply text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400;
+}
+
+.platform-sidebar__brand-title {
+  @apply text-sm font-bold text-surface-fg;
+}
+
+.platform-nav-link {
+  @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-surface-muted transition hover:bg-accent-muted hover:text-brand-700 dark:hover:text-brand-300;
+
+  &.active {
+    @apply bg-accent-muted font-semibold text-brand-700 shadow-sm dark:text-brand-300;
+  }
+}
+
+.platform-login-panel {
+  background: var(--gradient-brand);
+}

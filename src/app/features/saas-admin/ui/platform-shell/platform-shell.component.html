@@ -1,0 +1,129 @@
+<div class="platform-layout flex">
+  <aside class="platform-sidebar platform-sidebar--desktop">
+    <div class="platform-sidebar__brand">
+      <div class="flex items-center gap-3">
+        <div class="platform-sidebar__brand-icon">
+          <lucide-icon [name]="Shield" class="h-5 w-5"></lucide-icon>
+        </div>
+        <div>
+          <p class="platform-sidebar__brand-label">Super Admin</p>
+          <p class="platform-sidebar__brand-title">{{ 'saas_admin.platform_title' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex flex-1 flex-col gap-1 px-3 py-4">
+      <a
+        routerLink="/platform/dashboard"
+        routerLinkActive="active"
+        class="platform-nav-link"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        <lucide-icon [name]="LayoutDashboard" class="h-4 w-4"></lucide-icon>
+        {{ 'saas_admin.nav_dashboard' | translate }}
+      </a>
+      <a routerLink="/platform/tenants" routerLinkActive="active" class="platform-nav-link">
+        <lucide-icon [name]="Users" class="h-4 w-4"></lucide-icon>
+        {{ 'saas_admin.nav_tenants' | translate }}
+      </a>
+    </nav>
+  </aside>
+
+  <div
+    *ngIf="mobileNavOpen()"
+    class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+    (click)="closeMobileNav()"
+  ></div>
+
+  <aside
+    class="platform-sidebar platform-sidebar--drawer fixed inset-y-0 start-0 z-50 w-72 transition-transform duration-300 ease-out"
+    [ngClass]="
+      mobileNavOpen()
+        ? 'translate-x-0 rtl:translate-x-0'
+        : '-translate-x-full rtl:translate-x-full'
+    "
+  >
+    <div class="platform-sidebar__brand flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="platform-sidebar__brand-icon">
+          <lucide-icon [name]="Shield" class="h-5 w-5"></lucide-icon>
+        </div>
+        <p class="platform-sidebar__brand-title">{{ 'saas_admin.platform_title' | translate }}</p>
+      </div>
+      <button type="button" class="platform-header-icon-btn lg:hidden" (click)="closeMobileNav()">
+        <lucide-icon [name]="X" class="h-5 w-5"></lucide-icon>
+      </button>
+    </div>
+    <nav class="flex flex-col gap-1 px-3 py-4" (click)="closeMobileNav()">
+      <a routerLink="/platform/dashboard" routerLinkActive="active" class="platform-nav-link">
+        <lucide-icon [name]="LayoutDashboard" class="h-4 w-4"></lucide-icon>
+        {{ 'saas_admin.nav_dashboard' | translate }}
+      </a>
+      <a routerLink="/platform/tenants" routerLinkActive="active" class="platform-nav-link">
+        <lucide-icon [name]="Users" class="h-4 w-4"></lucide-icon>
+        {{ 'saas_admin.nav_tenants' | translate }}
+      </a>
+    </nav>
+  </aside>
+
+  <div class="platform-main flex min-w-0 flex-1 flex-col">
+    <header class="platform-header">
+      <div class="platform-header__start">
+        <button
+          type="button"
+          class="platform-header-icon-btn hidden max-lg:inline-flex"
+          (click)="toggleMobileNav()"
+          [attr.aria-label]="'Menu'"
+        >
+          <lucide-icon [name]="Menu" class="h-5 w-5"></lucide-icon>
+        </button>
+
+        <div class="platform-header__brand">
+          <div class="platform-header__brand-icon hidden max-lg:flex">
+            <lucide-icon [name]="Shield" class="h-4 w-4"></lucide-icon>
+          </div>
+          <div class="min-w-0">
+            <p class="platform-header__title">{{ 'saas_admin.platform_title' | translate }}</p>
+            <p class="platform-header__subtitle hidden sm:block">
+              {{ 'saas_admin.platform_tagline' | translate }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="platform-header__end">
+        <div class="platform-header__toolbar">
+          <app-theme-toggle />
+        </div>
+
+        <div class="platform-header__divider" aria-hidden="true"></div>
+
+        <div class="platform-header__account">
+          <div class="platform-user-chip">
+            <div class="platform-user-avatar" [attr.aria-label]="user()?.name">
+              <span>{{ userInitials() }}</span>
+            </div>
+            <div class="platform-user-meta">
+              <p class="platform-user-name">{{ user()?.name }}</p>
+              <p class="platform-user-role">{{ 'saas_admin.super_admin_role' | translate }}</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="platform-logout-btn"
+            (click)="logout()"
+            [attr.aria-label]="'saas_admin.logout' | translate"
+          >
+            <lucide-icon [name]="LogOut" class="h-[1.125rem] w-[1.125rem]"></lucide-icon>
+            <span class="hidden md:inline">{{ 'saas_admin.logout' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 lg:p-8">
+      <router-outlet />
+    </main>
+  </div>
+</div>

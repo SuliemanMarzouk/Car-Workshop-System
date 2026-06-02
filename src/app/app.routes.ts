@@ -2,13 +2,33 @@ import { Routes } from '@angular/router';
 import { authGuard, publicGuard } from '@core/auth/guards/auth.guard';
 import { permissionGuard } from '@core/auth/guards/permission.guard';
 import { PERMISSIONS } from '@core/auth/models/permission';
+import { workshopTenantGuard } from '@core/workshop/guards/workshop-tenant.guard';
 
 export const routes: Routes = [
+  {
+    path: 'platform',
+    loadChildren: () =>
+      import('@features/saas-admin/saas-admin.routes').then((m) => m.SAAS_ADMIN_ROUTES),
+  },
+  {
+    path: 'workshop-not-found',
+    loadComponent: () =>
+      import('@features/errors/pages/workshop-not-found/workshop-not-found.component').then(
+        (m) => m.WorkshopNotFoundComponent,
+      ),
+  },
+  {
+    path: 'workshop-suspended',
+    loadComponent: () =>
+      import('@features/errors/pages/workshop-suspended/workshop-suspended.component').then(
+        (m) => m.WorkshopSuspendedComponent,
+      ),
+  },
   {
     path: 'login',
     loadComponent: () =>
       import('@features/auth/login/login.component').then((m) => m.LoginComponent),
-    canActivate: [publicGuard],
+    canActivate: [workshopTenantGuard, publicGuard],
   },
   {
     path: 'register',
@@ -36,7 +56,7 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('@core/layout/shell/shell.component').then((m) => m.ShellComponent),
-    canActivate: [authGuard],
+    canActivate: [workshopTenantGuard, authGuard],
     children: [
       {
         path: 'forbidden',
